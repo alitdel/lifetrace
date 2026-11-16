@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350F" />
+      <stop offset="50%" stop-color="#92400E" />
+      <stop offset="100%" stop-color="#451A03" />
+    </linearGradient>
+    <radialGradient id="coilGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FEF3C7" />
+      <stop offset="40%" stop-color="#F59E0B" />
+      <stop offset="80%" stop-color="#B45309" />
+      <stop offset="100%" stop-color="#78350F" />
+    </radialGradient>
+    <pattern id="weave" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 0 10 L 20 10 M 10 0 L 10 20" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect width="800" height="500" fill="url(#weave)"/>
+  
+  <!-- Handwoven Coil Basket Illustration -->
+  <g transform="translate(400, 250)">
+    <!-- Base Shadow -->
+    <ellipse cx="0" cy="140" rx="260" ry="40" fill="rgba(0,0,0,0.4)" />
+    
+    <!-- Outer Rim -->
+    <ellipse cx="0" cy="-20" rx="230" ry="90" fill="#92400E" stroke="#FEF3C7" stroke-width="6"/>
+    <!-- Outer Body -->
+    <path d="M -230 -20 C -230 110, -140 140, 0 140 C 140 140, 230 110, 230 -20 Z" fill="url(#coilGrad)" stroke="#B45309" stroke-width="4"/>
+    
+    <!-- Inner Bowl Depth -->
+    <ellipse cx="0" cy="-20" rx="210" ry="75" fill="#78350F"/>
+    
+    <!-- Concentric Coiled Pattern in Center -->
+    <ellipse cx="0" cy="-20" rx="170" ry="60" fill="#B45309" stroke="#FEF3C7" stroke-width="3" stroke-dasharray="8,4"/>
+    <ellipse cx="0" cy="-20" rx="130" ry="45" fill="#D97706" stroke="#92400E" stroke-width="3" stroke-dasharray="6,3"/>
+    <ellipse cx="0" cy="-20" rx="90" ry="32" fill="#F59E0B" stroke="#FEF3C7" stroke-width="4" stroke-dasharray="5,3"/>
+    <ellipse cx="0" cy="-20" rx="50" ry="18" fill="#B91C1C" stroke="#FEF3C7" stroke-width="3"/>
+    <ellipse cx="0" cy="-20" rx="20" ry="8" fill="#FEF3C7"/>
+
+    <!-- Geometric Woven Star Rays -->
+    <path d="M -170 -20 L 170 -20 M 0 -80 L 0 40 M -120 -60 L 120 20 M -120 20 L 120 -60" stroke="#FEF3C7" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- Braided Edge Highlights -->
+    <ellipse cx="0" cy="-20" rx="234" ry="92" fill="none" stroke="#FDE68A" stroke-width="4" stroke-dasharray="10,6"/>
+  </g>
+
+  <!-- Title Badge Overlay -->
+  <rect x="40" y="380" width="360" height="80" rx="12" fill="rgba(15,23,42,0.85)" stroke="rgba(245,158,11,0.5)" stroke-width="1.5"/>
+  <text x="60" y="414" fill="#FBBF24" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="1">UGANDAN INDIGENOUS CRAFTS</text>
+  <text x="60" y="442" fill="#FFFFFF" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="800">Basket Making (Ebibbo)</text>
+
+</svg>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeTrace – Preserving, Sharing and Learning Local Skills and Traditional Craftsmanship</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+
+  <!-- Hero Section -->
+  <section class="hero hero-home">
+    <div class="container hero-layout">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <i class="fas fa-feather-alt brand-gold" aria-hidden="true"></i>
+          <span>Ugandan crafts, skills and stories</span>
+        </div>
+        <h1 class="hero-title">
+          Preserving our skills.<br>
+          Sharing our knowledge.<br>
+          <span>Inspiring future generations.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Discover, document and learn traditional crafts through practical guides, photographs and knowledge shared by craftspeople.
+        </p>
+        <div class="hero-cta">
+          <a href="/categories.html" class="btn btn-teal btn-lg">
+            <i class="fas fa-layer-group" aria-hidden="true"></i> Explore Crafts
+          </a>
+          <a href="/knowledge-library.html" class="btn btn-outline-white btn-lg">
+            <i class="fas fa-book-open" aria-hidden="true"></i> Start Learning
+          </a>
+          <a href="/register.html?role=expert" class="btn btn-gold btn-lg">
+            <i class="fas fa-hands-helping" aria-hidden="true"></i> Share Your Skill
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-art" aria-label="Illustrations of Ugandan craft traditions">
+        <div class="hero-art-main">
+          <img src="/assets/images/category-basket.svg" alt="Basket-making illustration">
+        </div>
+        <div class="hero-art-card hero-art-card-pottery">
+          <img src="/assets/images/category-pottery.svg" alt="Illustrative pottery artwork">
+          <span>Pottery</span>
+        </div>
+        <div class="hero-art-card hero-art-card-textiles">
+          <img src="/assets/images/category-textiles.svg" alt="Illustrative barkcloth and textile artwork">
+          <span>Textiles</span>
+        </div>
+        <div class="hero-art-note">
+          <i class="fas fa-feather-alt" aria-hidden="true"></i>
+          Traditional craft
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Craft Categories (Visual Grid) -->
+  <section style="padding:75px 0;background-color:var(--slate-50);">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
+        <div>
+          <span class="badge badge-skill" style="margin-bottom:10px;"><i class="fas fa-layer-group"></i> Traditional Disciplines</span>
+          <h2 style="font-size:2.2rem;font-weight:800;color:var(--navy-900);">Ugandan Traditional Craft Categories</h2>
+          <p style="color:var(--slate-600);margin-top:8px;">
+            Explore local crafts and discover how each one is made, from materials to finished work.
+          </p>
+        </div>
+        <a href="/categories.html" class="btn btn-outline">
+          Explore All Categories <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:24px;" id="categories-grid">
+        <!-- Dynamically populated or rendered via JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Verified Knowledge Records (Visual Cards) -->
+  <section style="padding:80px 0;background-color:var(--white);">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:16px;">
+        <div>
+          <span class="badge badge-published" style="margin-bottom:10px;"><i class="fas fa-book-open"></i> Craft tutorials</span>
+          <h2 style="font-size:2.2rem;font-weight:800;color:var(--navy-900);">Featured Traditional Skills</h2>
+          <p style="color:var(--slate-600);margin-top:8px;">
+            Learn from clear, step-by-step guides shared by craftspeople.
+          </p>
+        </div>
+        <a href="/knowledge-library.html" class="btn btn-teal">
+          Browse Knowledge Library <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="knowledge-grid" id="featured-records-grid">
+        <!-- Dynamically loaded -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Preserving Indigenous Craftsmanship Matters -->
+  <section style="padding:80px 0;background-color:var(--navy-900);color:white;">
+    <div class="container">
+      <div style="text-align:center;max-width:800px;margin:0 auto 50px;">
+        <span class="badge" style="background:var(--gold-500);color:var(--navy-950);font-weight:700;margin-bottom:12px;">Cultural Heritage Mandate</span>
+        <h2 style="font-size:2.4rem;font-weight:800;color:white;">Why Preserving Local Knowledge Matters</h2>
+        <p style="color:var(--slate-300);font-size:1.05rem;line-height:1.7;margin-top:12px;">
+          Traditional crafts represent centuries of ecological harmony, botanical mastery, and mathematical ingenuity. When elder craftspeople retire without digital records, irreplaceable human heritage disappears forever.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:28px;">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:30px;border-radius:var(--radius-lg);">
+          <div style="width:50px;height:50px;border-radius:12px;background:var(--teal-600);color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;">
+            <i class="fas fa-history"></i>
+          </div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-bottom:10px;color:white;">Intergenerational Transfer</h3>
+          <p style="color:var(--slate-300);font-size:0.92rem;line-height:1.6;">
+            Connect younger digital-native learners directly with master artisans, bridging the knowledge gap through video walkthroughs and photographic stage records.
+          </p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:30px;border-radius:var(--radius-lg);">
+          <div style="width:50px;height:50px;border-radius:12px;background:var(--gold-500);color:var(--navy-950);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;">
+            <i class="fas fa-leaf"></i>
+          </div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-bottom:10px;color:white;">Sustainable Organic Materials</h3>
+          <p style="color:var(--slate-300);font-size:0.92rem;line-height:1.6;">
+            Preserve botanical knowledge of banana pseudostem fibers (Ebyai), wild date palm fronds (Enkindu), natural hibiscus dyes, and anthill clays.
+          </p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:30px;border-radius:var(--radius-lg);">
+          <div style="width:50px;height:50px;border-radius:12px;background:var(--emerald-600);color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-bottom:10px;color:white;">Attribution & Cultural Respect</h3>
+          <p style="color:var(--slate-300);font-size:0.92rem;line-height:1.6;">
+            Encourage clear attribution and respect for community guidance when traditional knowledge is documented and shared.
+          </p>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:30px;border-radius:var(--radius-lg);">
+          <div style="width:50px;height:50px;border-radius:12px;background:var(--indigo-600);color:white;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-bottom:10px;color:white;">Demonstrated Practical Mastery</h3>
+          <p style="color:var(--slate-300);font-size:0.92rem;line-height:1.6;">
+            Learners don't just watch videos—they make the products, upload photographic proof of their work, receive expert grading, and earn authentic certificates.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Crafts to explore -->
+  <section style="padding:80px 0;background-color:var(--slate-50);">
+    <div class="container">
+      <div style="text-align:center;max-width:700px;margin:0 auto 45px;">
+        <span class="badge badge-skill" style="margin-bottom:10px;"><i class="fas fa-layer-group"></i> Traditional crafts</span>
+        <h2 style="font-size:2.2rem;font-weight:800;color:var(--navy-900);">Crafts to Explore</h2>
+        <p style="color:var(--slate-600);margin-top:10px;">
+          Explore practical guides to craft traditions, materials and making techniques.
+        </p>
+      </div>
+
+      <div class="craft-example-grid">
+        <a href="/knowledge-library.html?category=basket-making" class="card craft-example" style="padding:18px;text-align:center;">
+          <img src="/assets/images/category-basket.svg" alt="Basket-making illustration" loading="lazy">
+          <h3>Basket Making</h3>
+          <p>Explore handwoven baskets and the techniques used to shape and finish them.</p>
+        </a>
+        <a href="/knowledge-library.html?category=mat-making" class="card craft-example" style="padding:18px;text-align:center;">
+          <img src="/assets/images/category-mat.svg" alt="Mat-making illustration" loading="lazy">
+          <h3>Mat Making</h3>
+          <p>Discover traditional weaving patterns for practical and decorative mats.</p>
+        </a>
+        <a href="/knowledge-library.html?category=pottery-clay-work" class="card craft-example" style="padding:18px;text-align:center;">
+          <img src="/assets/images/category-pottery.svg" alt="Pottery illustration" loading="lazy">
+          <h3>Pottery and Clay Work</h3>
+          <p>Learn about shaping, decorating and finishing useful clay products.</p>
+        </a>
+        <a href="/knowledge-library.html?category=traditional-textiles" class="card craft-example" style="padding:18px;text-align:center;">
+          <img src="/assets/images/category-textiles.svg" alt="Barkcloth and textile illustration" loading="lazy">
+          <h3>Traditional Textiles</h3>
+          <p>Explore barkcloth and other textile traditions through documented craft guides.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The LifeTrace Four-Role Pipeline -->
+  <section style="padding:80px 0;background:var(--white);">
+    <div class="container">
+      <div style="text-align:center;max-width:750px;margin:0 auto 50px;">
+        <span class="badge badge-submitted" style="margin-bottom:10px;">The Preservation Workflow</span>
+        <h2 style="font-size:2.2rem;font-weight:800;color:var(--navy-900);">How LifeTrace Protects Local Skills</h2>
+        <p style="color:var(--slate-600);margin-top:10px;">
+          A community-led process that helps preserve local knowledge and support practical learning.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:24px;">
+        <div class="card" style="padding:26px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:var(--teal-50);color:var(--teal-600);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;">
+            <i class="fas fa-hands-helping"></i>
+          </div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);margin-bottom:8px;">1. Expert Documents</h3>
+          <p style="font-size:0.9rem;color:var(--slate-600);line-height:1.6;">
+            Craftspeople record local names, material harvesting, tools, step-by-step photos, safety warnings, and video demonstrations.
+          </p>
+        </div>
+
+        <div class="card" style="padding:26px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:var(--gold-50);color:var(--gold-600);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);margin-bottom:8px;">2. Reviewer Verifies</h3>
+          <p style="font-size:0.9rem;color:var(--slate-600);line-height:1.6;">
+            Standards reviewers scrutinize clarity, step integrity, safety compliance, and community attribution before approving publication.
+          </p>
+        </div>
+
+        <div class="card" style="padding:26px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:var(--indigo-100);color:var(--indigo-600);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;">
+            <i class="fas fa-camera"></i>
+          </div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);margin-bottom:8px;">3. Learner Practises</h3>
+          <p style="font-size:0.9rem;color:var(--slate-600);line-height:1.6;">
+            Learners follow procedures, mark step completions, produce their handmade craft, and upload photographic evidence of their work.
+          </p>
+        </div>
+
+        <div class="card" style="padding:26px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:var(--emerald-100);color:var(--emerald-600);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px;">
+            <i class="fas fa-award"></i>
+          </div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);margin-bottom:8px;">4. Verified Certification</h3>
+          <p style="font-size:0.9rem;color:var(--slate-600);line-height:1.6;">
+            Learners can earn certificates after completing the required practical work and assessments.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section style="background-color:var(--navy-900);color:white;padding:75px 0;text-align:center;">
+    <div class="container" style="max-width:800px;">
+      <h2 style="font-size:2.3rem;font-weight:800;margin-bottom:16px;">Join Uganda's Living Archive of Craftsmanship</h2>
+      <p style="font-size:1.1rem;color:var(--slate-300);margin-bottom:32px;">
+        Whether you are a practicing master artisan wishing to preserve your life's work or a learner ready to create authentic handmade products, LifeTrace is built for you.
+      </p>
+      <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="/register.html" class="btn btn-gold btn-lg"><i class="fas fa-user-plus"></i> Create Account</a>
+        <a href="/certificate.html" class="btn btn-outline-white btn-lg"><i class="fas fa-qrcode"></i> Verify a Certificate</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Fetch public categories and their representative artwork.
+      try {
+        const catRes = await api.get('/categories');
+        const grid = document.getElementById('categories-grid');
+        if (catRes.success && catRes.categories) {
+          grid.innerHTML = catRes.categories.map(c => `
+            <a href="/knowledge-library.html?category=${c.slug}" class="card category-link-card" style="text-decoration:none;overflow:hidden;transition:var(--transition);display:flex;flex-direction:column;">
+              <div style="height:140px;background:var(--slate-100);overflow:hidden;">
+                <img src="${c.image_url || categoryImageFor(c)}" alt="${c.name} craft illustration" style="width:100%;height:100%;object-fit:cover;" loading="lazy">
+              </div>
+              <div style="padding:18px;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+                <div>
+                  <div style="font-size:0.75rem;font-weight:700;color:var(--teal-700);text-transform:uppercase;margin-bottom:4px;"><i class="fas ${c.icon || 'fa-tools'}"></i> Traditional Domain</div>
+                  <div style="font-weight:800;font-size:1.05rem;color:var(--navy-900);margin-bottom:6px;">${c.name}</div>
+                  <p style="font-size:0.82rem;color:var(--slate-600);line-height:1.4;margin:0 0 12px;">${c.description || ''}</p>
+                </div>
+                <div style="font-size:0.8rem;font-weight:700;color:var(--teal-600);">
+                  ${c.published_records_count || 0} documented guides <i class="fas fa-arrow-right" style="font-size:0.75rem;"></i>
+                </div>
+              </div>
+            </a>
+          `).join('');
+        }
+      } catch (err) {
+        console.warn('Could not load categories:', err);
+      }
+
+      // Fetch public featured craft guides.
+      try {
+        const featRes = await api.get('/knowledge/featured');
+        const fGrid = document.getElementById('featured-records-grid');
+        if (featRes.success && featRes.records) {
+          fGrid.innerHTML = featRes.records.map(r => `
+            <div class="knowledge-card">
+              <div class="knowledge-thumb">
+                <img src="${r.cover_image_url || categoryImageFor({ slug: r.category_slug })}" alt="${r.title}" loading="lazy">
+                <div class="knowledge-thumb-overlay">
+                  <span class="badge badge-published"><i class="fas fa-book-open"></i> Craft guide</span>
+                  <span class="badge badge-skill">${r.skill_level}</span>
+                </div>
+              </div>
+              <div class="knowledge-content">
+                <div class="knowledge-meta">
+                  <span><i class="fas ${r.category_icon || 'fa-tools'}"></i> ${r.category_name}</span>
+                  <span>•</span>
+                  <span><i class="far fa-clock"></i> ${r.estimated_time_minutes} mins</span>
+                  <span>•</span>
+                  <span><i class="fas fa-list-ol"></i> ${r.steps_count || 5} steps</span>
+                </div>
+                <h3 class="knowledge-title" style="margin-bottom:4px;">
+                  <a href="/knowledge-details.html?id=${r.id}">${r.title}</a>
+                </h3>
+                ${r.local_name ? `<div style="font-size:0.82rem;font-style:italic;color:var(--teal-700);font-weight:600;margin-bottom:8px;">${r.local_name}</div>` : ''}
+                <p class="knowledge-desc">${r.short_summary}</p>
+                <div class="knowledge-author">
+                  <div class="author-info">
+                    <img src="${r.expert_avatar || '/assets/avatars/joyce-nakato.svg'}" alt="${r.expert_name}" class="author-avatar" onerror="this.src='/assets/avatars/admin.svg'">
+                    <div>
+                      <div class="author-name">${r.expert_name}</div>
+                      <div class="author-trade">${r.community_region || 'Master Craftsperson'}</div>
+                    </div>
+                  </div>
+                  <a href="/knowledge-details.html?id=${r.id}" class="btn btn-teal btn-sm">Study Guide</a>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.warn('Could not load featured:', err);
+      }
+    });
+  </script>
+</body>
+</html>

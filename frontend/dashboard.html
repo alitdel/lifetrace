@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Dashboard Top Header Bar -->
+  <section style="background:var(--navy-900);color:var(--white);padding:35px 0 25px;border-bottom:1px solid rgba(255,255,255,0.1);">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span class="badge" id="dash-role-badge" style="background:var(--teal-600);color:white;">ROLE</span>
+          <span style="font-size:0.85rem;color:var(--slate-400);" id="dash-date">Uganda Practical Knowledge System</span>
+        </div>
+        <h1 style="font-size:2rem;font-weight:800;color:var(--white);" id="dash-greeting">Welcome to your Dashboard</h1>
+      </div>
+
+      <div id="dash-header-actions" style="display:flex;gap:12px;">
+        <!-- Injected role actions -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <div class="container" style="padding:40px 20px;">
+    <!-- Metric Stat Cards -->
+    <div class="stats-grid" id="dash-metrics-grid">
+      <!-- Injected metrics -->
+    </div>
+
+    <!-- Role-Specific Views Container -->
+    <div id="role-dashboard-container">
+      <div style="text-align:center;padding:50px 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--teal-600);"></i>
+        <div style="margin-top:12px;color:var(--slate-600);">Loading your role workspace...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth
+      try {
+        const authRes = await api.get('/auth/me');
+        if (!authRes.authenticated || !authRes.user) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const user = authRes.user;
+        document.getElementById('dash-role-badge').textContent = user.role.toUpperCase();
+        document.getElementById('dash-greeting').textContent = `Welcome back, ${user.full_name}`;
+        document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Render appropriate dashboard view
+        if (user.role === 'expert') {
+          await renderExpertDashboard(user);
+        } else if (user.role === 'learner') {
+          await renderLearnerDashboard(user);
+        } else if (user.role === 'reviewer') {
+          await renderReviewerDashboard(user);
+        } else if (user.role === 'admin') {
+          await renderAdminDashboard(user);
+        }
+      } catch (err) {
+        console.error('Dashboard init error:', err);
+        window.location.href = '/login.html';
+      }
+    });
+
+    /**
+     * EXPERT DASHBOARD
+     */
+    async function renderExpertDashboard(user) {
+      document.getElementById('dash-header-actions').innerHTML = `
+        <a href="/create-knowledge.html" class="btn btn-gold btn-sm"><i class="fas fa-plus-circle"></i> Document Knowledge</a>
+        <a href="/practical-submission.html" class="btn btn-outline-white btn-sm"><i class="fas fa-tasks"></i> Review Submissions</a>
+      `;
+
+      // Fetch expert's records
+      const [submissionsRes, subsToGradeRes] = await Promise.all([
+        api.get('/knowledge/my/submissions'),
+        api.get('/learning/submissions/all')
+      ]);
+
+      const records = submissionsRes.records || [];
+      const practicals = subsToGradeRes.submissions || [];
+
+      const publishedCount = records.filter(r => r.status === 'published').length;
+      const pendingCount = records.filter(r => r.status === 'submitted' || r.status === 'under_review').length;
+      const draftCount = records.filter(r => r.status === 'draft').length;
+      const unassessedCount = practicals.filter(p => p.status === 'submitted').length;
+
+      // Render stats
+      document.getElementById('dash-metrics-grid').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon teal"><i class="fas fa-check-double"></i></div>
+          <div>
+            <div class="stat-value">${publishedCount}</div>
+            <div class="stat-label">Published Guides</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><i class="fas fa-clock"></i></div>
+          <div>
+            <div class="stat-value">${pendingCount}</div>
+            <div class="stat-label">Pending Verification</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon navy"><i class="fas fa-file-alt"></i></div>
+          <div>
+            <div class="stat-value">${draftCount}</div>
+            <div class="stat-label">Active Drafts</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-user-graduate"></i></div>
+          <div>
+            <div class="stat-value">${unassessedCount}</div>
+            <div class="stat-label">Assignments to Evaluate</div>
+          </div>
+        </div>
+      `;
+
+      // Render records table & practicals
+      document.getElementById('role-dashboard-container').innerHTML = `
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;">
+          <div>
+            <div class="card" style="margin-bottom:30px;">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-book" style="color:var(--teal-600);margin-right:8px;"></i> My Knowledge Preservations</h3>
+                <a href="/create-knowledge.html" class="btn btn-teal btn-sm"><i class="fas fa-plus"></i> New Module</a>
+              </div>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Title & Category</th>
+                      <th>Skill Level</th>
+                      <th>Status</th>
+                      <th>Views</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${records.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:30px;color:#64748b;">No practical records documented yet. Click "New Module" to start.</td></tr>' : records.map(r => `
+                      <tr>
+                        <td>
+                          <div style="font-weight:700;color:var(--navy-900);">${r.title}</div>
+                          <div style="font-size:0.75rem;color:var(--slate-500);"><i class="fas ${r.category_icon || 'fa-tools'}"></i> ${r.category_name} • ${r.steps_count} steps</div>
+                        </td>
+                        <td><span class="badge badge-skill">${r.skill_level}</span></td>
+                        <td><span class="badge badge-${r.status}">${r.status.replace('_', ' ')}</span></td>
+                        <td>${r.view_count || 0}</td>
+                        <td>
+                          <div style="display:flex;gap:6px;">
+                            <a href="/knowledge-details.html?id=${r.id}" class="btn btn-outline btn-sm" title="Preview"><i class="fas fa-eye"></i></a>
+                            <a href="/create-knowledge.html?edit=${r.id}" class="btn btn-teal btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <!-- Pending Practical Submissions -->
+            <div class="card" style="margin-bottom:30px;">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-user-check" style="color:var(--gold-600);margin-right:8px;"></i> Practical Submissions</h3>
+                <a href="/practical-submission.html" class="btn btn-outline btn-sm">All</a>
+              </div>
+              <div class="card-body" style="padding:16px;">
+                ${practicals.length === 0 ? '<p style="color:#64748b;font-size:0.85rem;text-align:center;padding:20px;">No learner submissions waiting.</p>' : practicals.slice(0, 4).map(p => `
+                  <div style="padding:12px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                      <div style="font-weight:600;font-size:0.88rem;color:var(--navy-900);">${p.submission_title}</div>
+                      <div style="font-size:0.75rem;color:var(--slate-500);">By ${p.learner_name} • Status: <span class="badge badge-${p.status}">${p.status}</span></div>
+                    </div>
+                    <a href="/practical-submission.html?id=${p.id}" class="btn btn-teal btn-sm">Grade</a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * LEARNER DASHBOARD
+     */
+    async function renderLearnerDashboard(user) {
+      document.getElementById('dash-header-actions').innerHTML = `
+        <a href="/knowledge-library.html" class="btn btn-teal btn-sm"><i class="fas fa-search"></i> Discover Practical Skills</a>
+        <a href="/certificate.html" class="btn btn-gold btn-sm"><i class="fas fa-award"></i> My Certificates</a>
+      `;
+
+      // Fetch enrolled courses & certificates & bookmarks
+      const [coursesRes, certsRes, bmRes] = await Promise.all([
+        api.get('/learning/my/courses'),
+        api.get('/certificates/my'),
+        api.get('/knowledge/my/bookmarks')
+      ]);
+
+      const courses = coursesRes.courses || [];
+      const certs = certsRes.certificates || [];
+      const bookmarks = bmRes.bookmarks || [];
+
+      const inProgressCount = courses.filter(c => c.status === 'in_progress').length;
+      const completedCount = courses.filter(c => c.status === 'completed').length;
+
+      // Stats
+      document.getElementById('dash-metrics-grid').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon teal"><i class="fas fa-book-open"></i></div>
+          <div>
+            <div class="stat-value">${courses.length}</div>
+            <div class="stat-label">Enrolled Modules</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><i class="fas fa-spinner"></i></div>
+          <div>
+            <div class="stat-value">${inProgressCount}</div>
+            <div class="stat-label">Modules In Progress</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+          <div>
+            <div class="stat-value">${completedCount}</div>
+            <div class="stat-label">Completed Practical Skills</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon navy"><i class="fas fa-award"></i></div>
+          <div>
+            <div class="stat-value">${certs.length}</div>
+            <div class="stat-label">Verified Certificates</div>
+          </div>
+        </div>
+      `;
+
+      // Render content
+      document.getElementById('role-dashboard-container').innerHTML = `
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:30px;">
+          <div>
+            <!-- Enrolled Courses -->
+            <div class="card" style="margin-bottom:30px;">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-tasks" style="color:var(--teal-600);margin-right:8px;"></i> Practical Competency Learning</h3>
+                <a href="/learning-progress.html" class="btn btn-outline btn-sm">Full Progress Log</a>
+              </div>
+              <div class="card-body">
+                ${courses.length === 0 ? `
+                  <div style="text-align:center;padding:40px 20px;">
+                    <i class="fas fa-graduation-cap" style="font-size:3rem;color:var(--slate-300);margin-bottom:16px;"></i>
+                    <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);">You have not enrolled in any practical modules yet.</h3>
+                    <p style="color:var(--slate-600);font-size:0.9rem;margin:8px 0 20px;">Browse our verified library to acquire hands-on vocational skills.</p>
+                    <a href="/knowledge-library.html" class="btn btn-teal"><i class="fas fa-search"></i> Explore Practical Library</a>
+                  </div>
+                ` : `
+                  <div style="display:flex;flex-direction:column;gap:16px;">
+                    ${courses.map(c => `
+                      <div style="border:1px solid #e2e8f0;border-radius:var(--radius-md);padding:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;background:var(--slate-50);">
+                        <div style="flex:1;min-width:240px;">
+                          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                            <span class="badge badge-skill">${c.category_name}</span>
+                            <span class="badge badge-${c.status}">${c.status.replace('_', ' ')}</span>
+                          </div>
+                          <div style="font-weight:700;font-size:1.05rem;color:var(--navy-900);">${c.title}</div>
+                          <div style="font-size:0.8rem;color:var(--slate-500);margin-top:2px;">Instructor: ${c.expert_name}</div>
+                          
+                          <!-- Progress Bar -->
+                          <div style="margin-top:12px;">
+                            <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:600;color:var(--slate-600);margin-bottom:4px;">
+                              <span>Steps Completed: ${c.completed_steps_count} / ${c.total_steps_count}</span>
+                              <span>${c.completion_percentage}%</span>
+                            </div>
+                            <div style="height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;">
+                              <div style="height:100%;background:var(--teal-600);width:${c.completion_percentage}%;border-radius:4px;transition:width 0.4s ease;"></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style="display:flex;gap:8px;">
+                          <a href="/knowledge-details.html?id=${c.knowledge_id}" class="btn btn-teal btn-sm"><i class="fas fa-play"></i> Continue</a>
+                          ${c.certificate_code ? `<a href="${c.verification_url}" class="btn btn-gold btn-sm"><i class="fas fa-award"></i> Certificate</a>` : ''}
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <!-- Earned Certificates Widget -->
+            <div class="card" style="margin-bottom:30px;">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-award" style="color:var(--gold-500);margin-right:8px;"></i> Certificates Earned</h3>
+                <a href="/certificate.html" class="btn btn-outline btn-sm">Verify</a>
+              </div>
+              <div class="card-body" style="padding:16px;">
+                ${certs.length === 0 ? '<p style="color:#64748b;font-size:0.85rem;text-align:center;padding:20px;">Complete 100% of procedural steps and pass the assessment to earn your first certificate.</p>' : certs.map(ct => `
+                  <div style="padding:12px;border-bottom:1px solid #f1f5f9;">
+                    <div style="font-weight:700;font-size:0.88rem;color:var(--navy-900);">${ct.title}</div>
+                    <div style="font-family:monospace;font-size:0.75rem;color:var(--teal-700);margin:3px 0;">${ct.certificate_code}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                      <span style="font-size:0.75rem;color:var(--slate-500);">Issued: ${ct.issue_date}</span>
+                      <a href="${ct.verification_url}" class="btn btn-teal btn-sm" style="font-size:0.72rem;padding:3px 8px;">View</a>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Saved Bookmarks -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-bookmark" style="color:var(--indigo-600);margin-right:8px;"></i> Bookmarked Guides</h3>
+              </div>
+              <div class="card-body" style="padding:16px;">
+                ${bookmarks.length === 0 ? '<p style="color:#64748b;font-size:0.85rem;text-align:center;padding:20px;">No saved bookmarks yet.</p>' : bookmarks.slice(0, 3).map(b => `
+                  <div style="padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                    <a href="/knowledge-details.html?id=${b.id}" style="font-weight:600;font-size:0.88rem;color:var(--navy-900);display:block;">${b.title}</a>
+                    <div style="font-size:0.75rem;color:var(--slate-500);margin-top:2px;">${b.category_name} • ${b.skill_level}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * REVIEWER DASHBOARD
+     */
+    async function renderReviewerDashboard(user) {
+      document.getElementById('dash-header-actions').innerHTML = `
+        <a href="/review-management.html" class="btn btn-gold btn-sm"><i class="fas fa-clipboard-check"></i> Open Review Queue</a>
+      `;
+
+      const res = await api.get('/reviews/pending');
+      const submissions = res.submissions || [];
+
+      const submittedCount = submissions.filter(s => s.status === 'submitted').length;
+      const underReviewCount = submissions.filter(s => s.status === 'under_review').length;
+
+      document.getElementById('dash-metrics-grid').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon gold"><i class="fas fa-inbox"></i></div>
+          <div>
+            <div class="stat-value">${submittedCount}</div>
+            <div class="stat-label">Awaiting Assignment</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon teal"><i class="fas fa-user-edit"></i></div>
+          <div>
+            <div class="stat-value">${underReviewCount}</div>
+            <div class="stat-label">Under Active Review</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-shield-alt"></i></div>
+          <div>
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Safety Mandate Active</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon navy"><i class="fas fa-check-circle"></i></div>
+          <div>
+            <div class="stat-value">${submissions.length}</div>
+            <div class="stat-label">Total in Queue</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('role-dashboard-container').innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-tasks" style="color:var(--gold-600);margin-right:8px;"></i> Practical Knowledge Submissions Waiting for Review</h3>
+            <a href="/review-management.html" class="btn btn-teal btn-sm">Manage Full Queue</a>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Submission Title</th>
+                  <th>Category</th>
+                  <th>Expert Contributor</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${submissions.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:30px;color:#64748b;">No pending submissions waiting for verification. All clear!</td></tr>' : submissions.map(s => `
+                  <tr>
+                    <td>
+                      <div style="font-weight:700;color:var(--navy-900);">${s.title}</div>
+                      <div style="font-size:0.75rem;color:var(--slate-500);">${s.steps_count} steps • ${s.skill_level}</div>
+                    </td>
+                    <td><span class="badge badge-skill">${s.category_name}</span></td>
+                    <td>
+                      <div style="font-weight:600;font-size:0.85rem;">${s.expert_name}</div>
+                      <div style="font-size:0.75rem;color:var(--slate-500);">${s.expert_org || 'Expert'}</div>
+                    </td>
+                    <td><span class="badge badge-${s.status}">${s.status.replace('_', ' ')}</span></td>
+                    <td>
+                      <a href="/review-management.html?id=${s.id}" class="btn btn-teal btn-sm"><i class="fas fa-microscope"></i> Inspect & Review</a>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * ADMINISTRATOR DASHBOARD
+     */
+    async function renderAdminDashboard(user) {
+      document.getElementById('dash-header-actions').innerHTML = `
+        <a href="/user-management.html" class="btn btn-outline-white btn-sm"><i class="fas fa-users-cog"></i> Users</a>
+        <a href="/category-management.html" class="btn btn-outline-white btn-sm"><i class="fas fa-tags"></i> Categories</a>
+        <a href="/reports-analytics.html" class="btn btn-teal btn-sm"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="/audit-logs.html" class="btn btn-gold btn-sm"><i class="fas fa-shield-alt"></i> Audit Logs</a>
+      `;
+
+      const [statsRes, analyticsRes] = await Promise.all([
+        api.get('/reports/stats'),
+        api.get('/reports/analytics')
+      ]);
+
+      const s = statsRes.stats;
+
+      document.getElementById('dash-metrics-grid').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-icon teal"><i class="fas fa-users"></i></div>
+          <div>
+            <div class="stat-value">${s.users.total}</div>
+            <div class="stat-label">Total Users (${s.users.experts} Exp, ${s.users.learners} Lrn)</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-book-reader"></i></div>
+          <div>
+            <div class="stat-value">${s.knowledge.published}</div>
+            <div class="stat-label">Published Guides (${s.knowledge.pending} Pending)</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><i class="fas fa-award"></i></div>
+          <div>
+            <div class="stat-value">${s.certificates.issued}</div>
+            <div class="stat-label">Certificates Issued</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon navy"><i class="fas fa-vial"></i></div>
+          <div>
+            <div class="stat-value">${s.learning.practicalSubmissions}</div>
+            <div class="stat-label">Practical Evidence Submissions</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('role-dashboard-container').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px;">
+          <div class="card" style="padding:22px;">
+            <h3 class="card-title" style="margin-bottom:16px;"><i class="fas fa-chart-pie" style="color:var(--teal-600);margin-right:8px;"></i> Submissions by Category</h3>
+            <canvas id="catChart" style="max-height:260px;"></canvas>
+          </div>
+
+          <div class="card" style="padding:22px;">
+            <h3 class="card-title" style="margin-bottom:16px;"><i class="fas fa-chart-bar" style="color:var(--gold-600);margin-right:8px;"></i> Knowledge Records by Status</h3>
+            <canvas id="statusChart" style="max-height:260px;"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-tools" style="color:var(--navy-700);margin-right:8px;"></i> Quick Administrative Shortcuts</h3>
+          </div>
+          <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+            <a href="/user-management.html" class="btn btn-outline" style="padding:16px;justify-content:flex-start;text-align:left;">
+              <i class="fas fa-user-shield" style="font-size:1.4rem;color:var(--teal-600);"></i>
+              <div>
+                <div style="font-weight:700;">User Management</div>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Activate, deactivate, change roles</div>
+              </div>
+            </a>
+
+            <a href="/category-management.html" class="btn btn-outline" style="padding:16px;justify-content:flex-start;text-align:left;">
+              <i class="fas fa-tags" style="font-size:1.4rem;color:var(--gold-600);"></i>
+              <div>
+                <div style="font-weight:700;">Category Registry</div>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Add and edit practical domains</div>
+              </div>
+            </a>
+
+            <a href="/audit-logs.html" class="btn btn-outline" style="padding:16px;justify-content:flex-start;text-align:left;">
+              <i class="fas fa-history" style="font-size:1.4rem;color:var(--indigo-600);"></i>
+              <div>
+                <div style="font-weight:700;">Immutable Audit Trail</div>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Inspect security and review events</div>
+              </div>
+            </a>
+
+            <a href="/settings.html" class="btn btn-outline" style="padding:16px;justify-content:flex-start;text-align:left;">
+              <i class="fas fa-sliders-h" style="font-size:1.4rem;color:var(--rose-600);"></i>
+              <div>
+                <div style="font-weight:700;">Platform Settings</div>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Configure thresholds & maintenance</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      `;
+
+      // Render Charts
+      if (analyticsRes.success && analyticsRes.chartData) {
+        const cd = analyticsRes.chartData;
+        
+        new Chart(document.getElementById('catChart'), {
+          type: 'doughnut',
+          data: {
+            labels: cd.categories.labels,
+            datasets: [{
+              data: cd.categories.data,
+              backgroundColor: ['#0D9488', '#F59E0B', '#4F46E5', '#059669', '#E11D48', '#334155', '#D97706', '#2DD4BF']
+            }]
+          },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        new Chart(document.getElementById('statusChart'), {
+          type: 'bar',
+          data: {
+            labels: cd.statuses.labels,
+            datasets: [{
+              label: 'Records Count',
+              data: cd.statuses.data,
+              backgroundColor: '#0F766E'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
+

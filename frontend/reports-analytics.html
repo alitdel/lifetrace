@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Platform Analytics – LifeTrace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--teal-600);">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <div>
+        <span class="badge" style="background:var(--teal-600);color:white;margin-bottom:8px;">Evaluation Intelligence</span>
+        <h1 style="font-size:2rem;font-weight:800;color:var(--white);">Platform Reports & Analytics</h1>
+        <p style="color:var(--slate-300);font-size:1rem;margin-top:4px;">
+          Visual metrics on knowledge preservation, vocational engagement, peer reviews, and certificates.
+        </p>
+      </div>
+
+      <button class="btn btn-outline-white btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Export Visual Report</button>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Metric Summary Grid -->
+    <div class="stats-grid" id="analytics-stats-grid" style="margin-bottom:30px;">
+      <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-users"></i></div>
+        <div>
+          <div class="stat-value" id="st-users">-</div>
+          <div class="stat-label">Total Registered Users</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        <div>
+          <div class="stat-value" id="st-published">-</div>
+          <div class="stat-label">Published Practical Guides</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-tasks"></i></div>
+        <div>
+          <div class="stat-value" id="st-enrollments">-</div>
+          <div class="stat-label">Active Learning Enrollments</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon navy"><i class="fas fa-award"></i></div>
+        <div>
+          <div class="stat-value" id="st-certs">-</div>
+          <div class="stat-label">Mastery Certificates Issued</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px;">
+      <!-- Chart 1: Categories -->
+      <div class="card" style="padding:24px;">
+        <h3 class="card-title" style="margin-bottom:16px;">
+          <i class="fas fa-chart-pie" style="color:var(--teal-600);margin-right:8px;"></i> Practical Knowledge by Domain
+        </h3>
+        <div style="position:relative;height:280px;">
+          <canvas id="chart-categories"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Statuses -->
+      <div class="card" style="padding:24px;">
+        <h3 class="card-title" style="margin-bottom:16px;">
+          <i class="fas fa-chart-bar" style="color:var(--gold-600);margin-right:8px;"></i> Submissions by Review Status
+        </h3>
+        <div style="position:relative;height:280px;">
+          <canvas id="chart-statuses"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <!-- Chart 3: Roles -->
+      <div class="card" style="padding:24px;">
+        <h3 class="card-title" style="margin-bottom:16px;">
+          <i class="fas fa-users-cog" style="color:var(--indigo-600);margin-right:8px;"></i> User Community Role Breakdown
+        </h3>
+        <div style="position:relative;height:280px;">
+          <canvas id="chart-roles"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 4: Popular -->
+      <div class="card" style="padding:24px;">
+        <h3 class="card-title" style="margin-bottom:16px;">
+          <i class="fas fa-fire" style="color:var(--rose-600);margin-right:8px;"></i> Most Studied Practical Competencies
+        </h3>
+        <div style="position:relative;height:280px;">
+          <canvas id="chart-popular"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const [statsRes, analyticsRes] = await Promise.all([
+          api.get('/reports/stats'),
+          api.get('/reports/analytics')
+        ]);
+
+        if (statsRes.success && statsRes.stats) {
+          const s = statsRes.stats;
+          document.getElementById('st-users').textContent = s.users.total;
+          document.getElementById('st-published').textContent = s.knowledge.published;
+          document.getElementById('st-enrollments').textContent = s.learning.totalEnrollments;
+          document.getElementById('st-certs').textContent = s.certificates.issued;
+        }
+
+        if (analyticsRes.success && analyticsRes.chartData) {
+          const cd = analyticsRes.chartData;
+
+          // Chart 1: Categories
+          new Chart(document.getElementById('chart-categories'), {
+            type: 'doughnut',
+            data: {
+              labels: cd.categories.labels,
+              datasets: [{
+                data: cd.categories.data,
+                backgroundColor: ['#0D9488', '#F59E0B', '#4F46E5', '#059669', '#E11D48', '#334155', '#D97706', '#2DD4BF']
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+
+          // Chart 2: Statuses
+          new Chart(document.getElementById('chart-statuses'), {
+            type: 'bar',
+            data: {
+              labels: cd.statuses.labels,
+              datasets: [{
+                label: 'Records Count',
+                data: cd.statuses.data,
+                backgroundColor: '#F59E0B'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+          });
+
+          // Chart 3: Roles
+          new Chart(document.getElementById('chart-roles'), {
+            type: 'pie',
+            data: {
+              labels: cd.roles.labels,
+              datasets: [{
+                data: cd.roles.data,
+                backgroundColor: ['#4F46E5', '#0D9488', '#F59E0B', '#E11D48']
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+
+          // Chart 4: Popular
+          new Chart(document.getElementById('chart-popular'), {
+            type: 'bar',
+            data: {
+              labels: cd.popular.labels,
+              datasets: [{
+                label: 'Direct Views',
+                data: cd.popular.data,
+                backgroundColor: '#0D9488'
+              }]
+            },
+            options: {
+              indexAxis: 'y',
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: { x: { beginAtZero: true } }
+            }
+          });
+        }
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>
+

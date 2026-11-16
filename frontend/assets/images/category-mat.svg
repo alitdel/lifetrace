@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+
+  <defs>
+    <linearGradient id="matBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" />
+      <stop offset="50%" stop-color="#0F766E" />
+      <stop offset="100%" stop-color="#042F2E" />
+    </linearGradient>
+    <pattern id="herringbone" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 0 0 L 20 20 L 40 0 M 0 20 L 20 40 L 40 20" stroke="#FCD34D" stroke-width="2.5" fill="none" opacity="0.35"/>
+      <path d="M 0 40 L 20 20 L 40 40" stroke="#FBBF24" stroke-width="1.5" fill="none" opacity="0.25"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#matBg)"/>
+  <rect width="800" height="500" fill="url(#herringbone)"/>
+
+  <!-- Unrolled Handwoven Mat Graphic -->
+  <g transform="translate(140, 60)">
+    <rect x="0" y="0" width="520" height="340" rx="8" fill="#D97706" stroke="#FEF3C7" stroke-width="5" transform="rotate(-3 260 170)"/>
+    <!-- Diagonal dyed woven stripes -->
+    <g transform="rotate(-3 260 170)" opacity="0.9">
+      <rect x="0" y="30" width="520" height="24" fill="#B91C1C" />
+      <rect x="0" y="70" width="520" height="18" fill="#047857" />
+      <rect x="0" y="110" width="520" height="30" fill="#78350F" />
+      <rect x="0" y="160" width="520" height="24" fill="#B91C1C" />
+      <rect x="0" y="200" width="520" height="18" fill="#047857" />
+      <rect x="0" y="240" width="520" height="30" fill="#78350F" />
+      <rect x="0" y="290" width="520" height="20" fill="#B91C1C" />
+      <!-- Reed Twill lines -->
+      <path d="M 0 0 L 520 340 M 100 0 L 520 280 M 0 100 L 360 340 M 200 0 L 520 210 M 0 200 L 210 340" stroke="#FEF3C7" stroke-width="1.5" opacity="0.4"/>
+      <!-- Folded bound fringes -->
+      <line x1="0" y1="0" x2="0" y2="340" stroke="#FEF3C7" stroke-width="8" stroke-dasharray="6,4"/>
+      <line x1="520" y1="0" x2="520" y2="340" stroke="#FEF3C7" stroke-width="8" stroke-dasharray="6,4"/>
+    </g>
+  </g>
+
+  <!-- Title Badge Overlay -->
+  <rect x="40" y="380" width="370" height="80" rx="12" fill="rgba(15,23,42,0.85)" stroke="rgba(20,184,166,0.5)" stroke-width="1.5"/>
+  <text x="60" y="414" fill="#2DD4BF" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="1">PALM REED WEAVING</text>
+  <text x="60" y="442" fill="#FFFFFF" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="800">Mat Making (Emikeeka)</text>
+
+</svg>

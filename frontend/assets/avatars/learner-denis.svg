@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+
+    <defs>
+      <linearGradient id="avBg_DK" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#15803D" />
+        <stop offset="100%" stop-color="#22C55E" />
+      </linearGradient>
+    </defs>
+    <circle cx="100" cy="100" r="98" fill="url(#avBg_DK)" stroke="#FFFFFF" stroke-width="4"/>
+    <circle cx="100" cy="80" r="38" fill="rgba(255,255,255,0.2)"/>
+    <path d="M 40 170 C 40 130, 70 120, 100 120 C 130 120, 160 130, 160 170 Z" fill="rgba(255,255,255,0.2)"/>
+    <text x="100" y="105" font-family="'Segoe UI', sans-serif" font-size="34" font-weight="900" fill="#FFFFFF" text-anchor="middle">DK</text>
+  
+</svg>

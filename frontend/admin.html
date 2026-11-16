@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--rose-600);">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <div>
+        <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:8px;">Administrative Control</span>
+        <h1 style="font-size:2rem;font-weight:800;color:var(--white);">LifeTrace Administration Console</h1>
+        <p style="color:var(--slate-300);font-size:1rem;margin-top:4px;">
+          System health, user governance, category classification, and audit surveillance.
+        </p>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <a href="/user-management.html" class="btn btn-outline-white btn-sm"><i class="fas fa-users-cog"></i> Users</a>
+        <a href="/category-management.html" class="btn btn-outline-white btn-sm"><i class="fas fa-tags"></i> Categories</a>
+        <a href="/reports-analytics.html" class="btn btn-teal btn-sm"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="/audit-logs.html" class="btn btn-gold btn-sm"><i class="fas fa-shield-alt"></i> Audit Trail</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Stat Cards -->
+    <div class="stats-grid" id="admin-stats-grid" style="margin-bottom:30px;">
+      <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-users"></i></div>
+        <div>
+          <div class="stat-value" id="ad-stat-users">-</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-book-reader"></i></div>
+        <div>
+          <div class="stat-value" id="ad-stat-published">-</div>
+          <div class="stat-label">Published Modules</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fas fa-clock"></i></div>
+        <div>
+          <div class="stat-value" id="ad-stat-pending">-</div>
+          <div class="stat-label">Pending Verification</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon navy"><i class="fas fa-award"></i></div>
+        <div>
+          <div class="stat-value" id="ad-stat-certs">-</div>
+          <div class="stat-label">Certificates Issued</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px;">
+      <div class="card" style="padding:22px;">
+        <h3 class="card-title" style="margin-bottom:14px;"><i class="fas fa-chart-pie" style="color:var(--teal-600);margin-right:8px;"></i> Practical Knowledge by Domain</h3>
+        <div style="position:relative;height:260px;">
+          <canvas id="adminCatChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="padding:22px;">
+        <h3 class="card-title" style="margin-bottom:14px;"><i class="fas fa-chart-bar" style="color:var(--gold-600);margin-right:8px;"></i> Status Distribution</h3>
+        <div style="position:relative;height:260px;">
+          <canvas id="adminStatusChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Shortcuts Card -->
+    <div class="card" style="padding:26px;">
+      <h3 class="card-title" style="margin-bottom:18px;"><i class="fas fa-shield-alt" style="color:var(--rose-600);margin-right:8px;"></i> System Governance Modules</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+        <a href="/user-management.html" class="stat-card" style="text-decoration:none;border-color:var(--slate-200);">
+          <div class="stat-icon teal"><i class="fas fa-user-shield"></i></div>
+          <div>
+            <div style="font-weight:700;color:var(--navy-900);">User Governance</div>
+            <div style="font-size:0.75rem;color:var(--slate-500);">RBAC, activation, status</div>
+          </div>
+        </a>
+
+        <a href="/category-management.html" class="stat-card" style="text-decoration:none;border-color:var(--slate-200);">
+          <div class="stat-icon gold"><i class="fas fa-tags"></i></div>
+          <div>
+            <div style="font-weight:700;color:var(--navy-900);">Domain Registry</div>
+            <div style="font-size:0.75rem;color:var(--slate-500);">Categories, ordering, icons</div>
+          </div>
+        </a>
+
+        <a href="/demo-library.html" class="stat-card" style="text-decoration:none;border-color:var(--slate-200);">
+          <div class="stat-icon rose"><i class="fas fa-video"></i></div>
+          <div>
+            <div style="font-weight:700;color:var(--navy-900);">Demo Video Library</div>
+            <div style="font-size:0.75rem;color:var(--slate-500);">Sample craft demos & attribution</div>
+          </div>
+        </a>
+
+        <a href="/audit-logs.html" class="stat-card" style="text-decoration:none;border-color:var(--slate-200);">
+          <div class="stat-icon navy"><i class="fas fa-history"></i></div>
+          <div>
+            <div style="font-weight:700;color:var(--navy-900);">Immutable Logs</div>
+            <div style="font-size:0.75rem;color:var(--slate-500);">Audit actions & IP tracking</div>
+          </div>
+        </a>
+
+        <a href="/settings.html" class="stat-card" style="text-decoration:none;border-color:var(--slate-200);">
+          <div class="stat-icon green"><i class="fas fa-sliders-h"></i></div>
+          <div>
+            <div style="font-weight:700;color:var(--navy-900);">Platform Settings</div>
+            <div style="font-size:0.75rem;color:var(--slate-500);">Certification thresholds</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const meRes = await api.get('/auth/me');
+        if (!meRes.authenticated || meRes.user.role !== 'admin') {
+          api.toast('Admin console is restricted to system administrators.', 'error');
+          setTimeout(() => window.location.href = '/dashboard.html', 1000);
+          return;
+        }
+
+        const [statsRes, analyticsRes] = await Promise.all([
+          api.get('/reports/stats'),
+          api.get('/reports/analytics')
+        ]);
+
+        if (statsRes.success && statsRes.stats) {
+          const s = statsRes.stats;
+          document.getElementById('ad-stat-users').textContent = s.users.total;
+          document.getElementById('ad-stat-published').textContent = s.knowledge.published;
+          document.getElementById('ad-stat-pending').textContent = s.knowledge.pending;
+          document.getElementById('ad-stat-certs').textContent = s.certificates.issued;
+        }
+
+        if (analyticsRes.success && analyticsRes.chartData) {
+          const cd = analyticsRes.chartData;
+
+          new Chart(document.getElementById('adminCatChart'), {
+            type: 'doughnut',
+            data: {
+              labels: cd.categories.labels,
+              datasets: [{
+                data: cd.categories.data,
+                backgroundColor: ['#0D9488', '#F59E0B', '#4F46E5', '#059669', '#E11D48', '#334155']
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+
+          new Chart(document.getElementById('adminStatusChart'), {
+            type: 'bar',
+            data: {
+              labels: cd.statuses.labels,
+              datasets: [{
+                label: 'Records',
+                data: cd.statuses.data,
+                backgroundColor: '#0F766E'
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        }
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
+</body>
+</html>
+

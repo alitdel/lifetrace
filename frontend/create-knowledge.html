@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Traditional Craft – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <div class="container" style="max-width:980px;padding:40px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px;">
+      <div>
+        <span class="badge" id="mode-badge" style="background:var(--teal-600);color:white;margin-bottom:6px;">Expert Knowledge Capture</span>
+        <h1 style="font-size:2.2rem;font-weight:900;color:var(--navy-900);" id="page-title">Document a Traditional Craft</h1>
+        <p style="color:var(--slate-600);font-size:0.95rem;">
+          Preserve ancestral techniques, local terminology, multi-stage photographs, materials, and safety guidelines for the national archive.
+        </p>
+      </div>
+
+      <a href="/dashboard.html" class="btn btn-outline"><i class="fas fa-times"></i> Cancel & Return</a>
+    </div>
+
+    <!-- Review comments alert if editing a rejected or revision-requested submission -->
+    <div id="review-feedback-banner" style="display:none;margin-bottom:24px;"></div>
+
+    <form id="knowledge-form" onsubmit="event.preventDefault();">
+      <!-- Section 1: Craft Identity & Cultural Heritage -->
+      <div class="card" style="padding:28px;margin-bottom:26px;">
+        <h3 style="font-size:1.15rem;font-weight:700;color:var(--navy-900);margin-bottom:18px;border-bottom:1px solid var(--slate-200);padding-bottom:8px;">
+          <i class="fas fa-landmark" style="color:var(--teal-600);margin-right:8px;"></i> 1. Craft Identity & Cultural Heritage
+        </h3>
+
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="title">Craft Title (English) <span class="req">*</span></label>
+            <input type="text" id="title" class="form-control" placeholder="e.g. Handwoven Coil Basket with Natural Dyes" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="local_name">Local Traditional Name <span class="req">*</span></label>
+            <input type="text" id="local_name" class="form-control" placeholder="e.g. Okuluka Ebibbo ky'Enkwanzi" required>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="category_id">Craft Category <span class="req">*</span></label>
+            <select id="category_id" class="form-control" required>
+              <option value="">Select category...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="community_region">Community / Region <span class="req">*</span></label>
+            <input type="text" id="community_region" class="form-control" placeholder="e.g. Buganda / Masaka & Wakiso" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="skill_level">Apprentice Skill Level <span class="req">*</span></label>
+            <select id="skill_level" class="form-control" required>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="all_levels">All Levels</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="short_summary">Short Executive Summary <span class="req">*</span></label>
+          <textarea id="short_summary" class="form-control" style="min-height:70px;" placeholder="2-3 sentences summarizing the practical goal and outcomes..." required maxlength="500"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cultural_background">Historical or Cultural Background</label>
+          <textarea id="cultural_background" class="form-control" style="min-height:90px;" placeholder="Describe how this skill originated, ceremonial roles, clan affiliations, or cultural values..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="detailed_description">Detailed Procedural Description <span class="req">*</span></label>
+          <textarea id="detailed_description" class="form-control" style="min-height:110px;" placeholder="Provide in-depth contextual explanation of the technical principles..." required></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="estimated_time_minutes">Duration (Minutes) <span class="req">*</span></label>
+            <input type="number" id="estimated_time_minutes" class="form-control" value="120" min="15" max="3000" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cover_image_url">Craft Cover Photograph URL</label>
+            <input type="text" id="cover_image_url" class="form-control" placeholder="/assets/images/category-basket.svg">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="demo_video_url">Video Demonstration URL</label>
+            <input type="text" id="demo_video_url" class="form-control" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+            <small style="display:block;margin-top:6px;color:var(--slate-500);">Use the video publisher's embed URL and retain creator attribution.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Materials & Where Obtained -->
+      <div class="card" style="padding:28px;margin-bottom:26px;">
+        <h3 style="font-size:1.15rem;font-weight:700;color:var(--navy-900);margin-bottom:18px;border-bottom:1px solid var(--slate-200);padding-bottom:8px;">
+          <i class="fas fa-boxes" style="color:var(--gold-600);margin-right:8px;"></i> 2. Materials & Natural Sourcing
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label" for="material_sourcing">Where Materials Can Be Obtained (Local Sourcing)</label>
+          <input type="text" id="material_sourcing" class="form-control" placeholder="e.g. Banana sheaths from Matooke plants, wild raffia from Mpigi wetlands...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="preparation_instructions">Preparation of Raw Materials</label>
+          <input type="text" id="preparation_instructions" class="form-control" placeholder="e.g. Sun-dry for 3 days, split into 2mm uniform ribbons, boil in marigold dye...">
+        </div>
+
+        <!-- Materials Table -->
+        <div style="margin-top:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <label class="form-label" style="margin-bottom:0;">Consumable Materials List</label>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addMaterialRow()"><i class="fas fa-plus"></i> Add Material</button>
+          </div>
+          <div id="materials-container" style="display:flex;flex-direction:column;gap:10px;">
+            <!-- Injected rows -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Tools Required -->
+      <div class="card" style="padding:28px;margin-bottom:26px;">
+        <h3 style="font-size:1.15rem;font-weight:700;color:var(--navy-900);margin-bottom:18px;border-bottom:1px solid var(--slate-200);padding-bottom:8px;">
+          <i class="fas fa-tools" style="color:var(--teal-600);margin-right:8px;"></i> 3. Required Artisanal Tools
+        </h3>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <label class="form-label" style="margin-bottom:0;">Tools & Equipment</label>
+          <button type="button" class="btn btn-outline btn-sm" onclick="addToolRow()"><i class="fas fa-plus"></i> Add Tool</button>
+        </div>
+        <div id="tools-container" style="display:flex;flex-direction:column;gap:10px;">
+          <!-- Injected rows -->
+        </div>
+      </div>
+
+      <!-- Section 4: Safety & Common Mistakes (MANDATORY) -->
+      <div class="card" style="padding:28px;margin-bottom:26px;border-left:5px solid var(--rose-600);">
+        <h3 style="font-size:1.15rem;font-weight:700;color:var(--rose-600);margin-bottom:18px;border-bottom:1px solid var(--slate-200);padding-bottom:8px;">
+          <i class="fas fa-shield-alt" style="margin-right:8px;"></i> 4. Safety Precautions & Common Mistakes
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label" for="safety_precautions">Mandatory Safety Precautions <span class="req">*</span></label>
+          <textarea id="safety_precautions" class="form-control" style="min-height:85px;" placeholder="Document essential hand protection, posture, blade handling, or kiln smoke precautions..." required></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="common_mistakes">Common Mistakes Committed by Beginners</label>
+            <textarea id="common_mistakes" class="form-control" placeholder="What errors frequently occur? (e.g. Pulling threads too tight, warping coils)"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mistake_solutions">Master Solutions & Corrective Actions</label>
+            <textarea id="mistake_solutions" class="form-control" placeholder="How should apprentices diagnose and fix these errors?"></textarea>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" for="expected_results">Expected Quality of Finished Craft <span class="req">*</span></label>
+          <input type="text" id="expected_results" class="form-control" placeholder="Describe the finished product's weight, dimensions, strength, and finish..." required>
+        </div>
+      </div>
+
+      <!-- Section 5: Step-by-Step Practical Making Procedure -->
+      <div class="card" style="padding:28px;margin-bottom:26px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;border-bottom:1px solid var(--slate-200);padding-bottom:8px;">
+          <div>
+            <h3 style="font-size:1.15rem;font-weight:700;color:var(--navy-900);margin-bottom:0;">
+              <i class="fas fa-list-ol" style="color:var(--teal-600);margin-right:8px;"></i> 5. Step-by-Step Procedure with Photographs
+            </h3>
+            <div style="font-size:0.8rem;color:var(--slate-500);margin-top:2px;">Document each sequential making stage with practical instructions and stage images.</div>
+          </div>
+          <button type="button" class="btn btn-teal btn-sm" onclick="addStepCard()"><i class="fas fa-plus"></i> Add Procedural Step</button>
+        </div>
+
+        <div id="steps-container" style="display:flex;flex-direction:column;gap:18px;">
+          <!-- Dynamically populated step cards -->
+        </div>
+      </div>
+
+      <!-- Section 6: Attribution, Consent & Visibility -->
+      <div class="card" style="padding:28px;margin-bottom:30px;">
+        <h3 style="font-size:1.15rem;font-weight:700;color:var(--navy-900);margin-bottom:18px;border-bottom:1px solid var(--slate-200);padding-bottom:8px;">
+          <i class="fas fa-balance-scale" style="color:var(--indigo-600);margin-right:8px;"></i> 6. Community Consent, Attribution & Access
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label" for="attribution_consent">Consent & Attribution Statement <span class="req">*</span></label>
+          <input type="text" id="attribution_consent" class="form-control" placeholder="e.g. Documented with community consent of the Mpigi Weavers Guild. Attribution to Joyce Nakato." required>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="visibility_level">Access Visibility Preference</label>
+            <select id="visibility_level" class="form-control">
+              <option value="public">Public (Open to All Visitors)</option>
+              <option value="registered_learners">Registered Learners Only</option>
+              <option value="private">Private (Restricted to Community)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="references_sources">Traditional Citations or Guild Records</label>
+            <input type="text" id="references_sources" class="form-control" placeholder="e.g. Buganda Artisanal Standards, UNBS Heritage Code">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex;justify-content:flex-end;gap:16px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline btn-lg" onclick="handleSubmit(false)">
+          <i class="fas fa-save"></i> Save as Draft
+        </button>
+        <button type="button" class="btn btn-gold btn-lg" onclick="handleSubmit(true)">
+          <i class="fas fa-paper-plane"></i> Submit for Peer Review
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let editKnowledgeId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const meRes = await api.get('/auth/me');
+        if (!meRes.authenticated || (meRes.user.role !== 'expert' && meRes.user.role !== 'admin')) {
+          api.toast('Only Expert craftspeople and Administrators can document knowledge.', 'warning');
+          setTimeout(() => window.location.href = '/dashboard.html', 1000);
+          return;
+        }
+
+        // Load Categories
+        const catRes = await api.get('/categories');
+        const catSelect = document.getElementById('category_id');
+        if (catRes.categories) {
+          catRes.categories.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.name;
+            catSelect.appendChild(opt);
+          });
+        }
+
+        // Check if edit mode
+        const urlParams = new URLSearchParams(window.location.search);
+        editKnowledgeId = urlParams.get('edit') || urlParams.get('id');
+
+        if (editKnowledgeId) {
+          await loadEditData(editKnowledgeId);
+        } else {
+          // Defaults for new draft
+          addToolRow('Weaving Awl', 'Empiso y\'okuluka', 'Hand-forged steel needle');
+          addToolRow('Craft Trimming Knife', 'Akambe akasala', 'Curved blade for clean cuts');
+          addMaterialRow('Banana Pseudostem Sheath', 'Ebyai', '10', 'Stalks', 'Local banana plantation');
+          addMaterialRow('Natural Dyed Raffia', 'Enjulu', '250', 'Grams', 'Local wetland extraction');
+          addStepCard('Harvesting and Stripping Fibers', 'Select dry banana pseudostems and strip lengthwise into uniform 15mm ribbons.', 'Ensure fibers have zero moisture before stripping.', 'Harvest on sunny mornings for best elasticity.', '/assets/images/basket-step-1.svg');
+          addStepCard('Coiling the Center Spiral Knot', 'Tightly wind sweetgrass end and bend into a teardrop loop locked with three figure-eight stitches.', 'Keep awl directed away from fingers.', 'Dampen raffia slightly before tying.', '/assets/images/basket-step-3.svg');
+        }
+      } catch (err) {
+        console.error('Init error:', err);
+      }
+    });
+
+    function addToolRow(name = '', localName = '', spec = '') {
+      const container = document.getElementById('tools-container');
+      const div = document.createElement('div');
+      div.className = 'tool-row';
+      div.style.cssText = 'display:grid;grid-template-columns:1.5fr 1fr 1.5fr 40px;gap:12px;align-items:center;';
+      div.innerHTML = `
+        <input type="text" class="form-control tool-name" placeholder="Tool name (English)" value="${name}" required>
+        <input type="text" class="form-control tool-local" placeholder="Local Name (e.g. Empiso)" value="${localName}">
+        <input type="text" class="form-control tool-spec" placeholder="Specification / Notes" value="${spec}">
+        <button type="button" class="btn btn-outline btn-sm" onclick="this.parentElement.remove()" style="color:var(--rose-600);" title="Remove">&times;</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addMaterialRow(name = '', localName = '', qty = '', unit = '', source = '') {
+      const container = document.getElementById('materials-container');
+      const div = document.createElement('div');
+      div.className = 'material-row';
+      div.style.cssText = 'display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.5fr 40px;gap:10px;align-items:center;';
+      div.innerHTML = `
+        <input type="text" class="form-control mat-name" placeholder="Material (English)" value="${name}" required>
+        <input type="text" class="form-control mat-local" placeholder="Local Name (e.g. Ebyai)" value="${localName}">
+        <input type="text" class="form-control mat-qty" placeholder="Qty" value="${qty}" required>
+        <input type="text" class="form-control mat-unit" placeholder="Unit" value="${unit}">
+        <input type="text" class="form-control mat-source" placeholder="Source location" value="${source}">
+        <button type="button" class="btn btn-outline btn-sm" onclick="this.parentElement.remove()" style="color:var(--rose-600);" title="Remove">&times;</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addStepCard(title = '', instruction = '', safety = '', tip = '', imgUrl = '') {
+      const container = document.getElementById('steps-container');
+      const stepIndex = container.children.length + 1;
+      const card = document.createElement('div');
+      card.className = 'step-card';
+      card.style.cssText = 'border:1px solid #e2e8f0;background:var(--slate-50);padding:22px;border-radius:var(--radius-md);';
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-weight:700;font-size:0.95rem;color:var(--teal-700);">Step ${stepIndex}</div>
+          <button type="button" class="btn btn-outline btn-sm" onclick="this.closest('.step-card').remove(); renumberSteps();" style="color:var(--rose-600);padding:2px 8px;" title="Delete step">&times;</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Step Action Title <span class="req">*</span></label>
+          <input type="text" class="form-control step-title-input" placeholder="e.g. Radial Stitching and Figure-Eight Interlocking" value="${title}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Detailed Practical Instructions <span class="req">*</span></label>
+          <textarea class="form-control step-instruction-input" placeholder="Explain the physical hands-on motion, angle, tension, and checks..." required>${instruction}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Step Photograph URL</label>
+          <input type="text" class="form-control step-img-input" placeholder="/assets/images/basket-step-1.svg" value="${imgUrl}">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="color:var(--rose-600);"><i class="fas fa-exclamation-triangle"></i> Step Safety Warning</label>
+            <input type="text" class="form-control step-safety-input" placeholder="Specific hazard for this step..." value="${safety}">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="color:var(--teal-700);"><i class="fas fa-lightbulb"></i> Practical Artisan Tip</label>
+            <input type="text" class="form-control step-tip-input" placeholder="Artisanal efficiency or quality trick..." value="${tip}">
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+
+    function renumberSteps() {
+      const cards = document.querySelectorAll('#steps-container .step-card');
+      cards.forEach((c, idx) => {
+        c.querySelector('div > div').textContent = `Step ${idx + 1}`;
+      });
+    }
+
+    async function loadEditData(id) {
+      document.getElementById('mode-badge').textContent = `Editing Craft #${id}`;
+      document.getElementById('page-title').textContent = 'Update Traditional Craft Record';
+
+      const res = await api.get(`/knowledge/details/${id}`);
+      if (!res.record) return;
+
+      const r = res.record;
+      document.getElementById('title').value = r.title || '';
+      document.getElementById('local_name').value = r.local_name || '';
+      document.getElementById('community_region').value = r.community_region || '';
+      document.getElementById('category_id').value = r.category_id || '';
+      document.getElementById('skill_level').value = r.skill_level || 'beginner';
+      document.getElementById('estimated_time_minutes').value = r.estimated_time_minutes || 60;
+      document.getElementById('short_summary').value = r.short_summary || '';
+      document.getElementById('cultural_background').value = r.cultural_background || '';
+      document.getElementById('detailed_description').value = r.detailed_description || '';
+      document.getElementById('material_sourcing').value = r.material_sourcing || '';
+      document.getElementById('preparation_instructions').value = r.preparation_instructions || '';
+      document.getElementById('cover_image_url').value = r.cover_image_url || '';
+      document.getElementById('demo_video_url').value = r.demo_video_url || '';
+      document.getElementById('safety_precautions').value = r.safety_precautions || '';
+      document.getElementById('common_mistakes').value = r.common_mistakes || '';
+      document.getElementById('mistake_solutions').value = r.mistake_solutions || r.troubleshooting || '';
+      document.getElementById('expected_results').value = r.expected_results || '';
+      document.getElementById('references_sources').value = r.references_sources || '';
+      document.getElementById('attribution_consent').value = r.attribution_consent || '';
+
+      // Populate tools
+      const toolBox = document.getElementById('tools-container');
+      toolBox.innerHTML = '';
+      if (r.tools && r.tools.length > 0) {
+        r.tools.forEach(t => addToolRow(t.name, t.local_name || '', t.specification));
+      } else {
+        addToolRow();
+      }
+
+      // Populate materials
+      const matBox = document.getElementById('materials-container');
+      matBox.innerHTML = '';
+      if (r.materials && r.materials.length > 0) {
+        r.materials.forEach(m => addMaterialRow(m.name, m.local_name || '', m.quantity, m.unit, m.source_location || ''));
+      } else {
+        addMaterialRow();
+      }
+
+      // Populate steps
+      const stepBox = document.getElementById('steps-container');
+      stepBox.innerHTML = '';
+      if (r.steps && r.steps.length > 0) {
+        r.steps.forEach(s => addStepCard(s.title, s.instruction, s.safety_warning, s.tip, s.image_url || ''));
+      } else {
+        addStepCard();
+      }
+    }
+
+    async function handleSubmit(submitForReview) {
+      const title = document.getElementById('title').value.trim();
+      const local_name = document.getElementById('local_name').value.trim();
+      const category_id = document.getElementById('category_id').value;
+      const short_summary = document.getElementById('short_summary').value.trim();
+      const detailed_description = document.getElementById('detailed_description').value.trim();
+      const safety_precautions = document.getElementById('safety_precautions').value.trim();
+      const expected_results = document.getElementById('expected_results').value.trim();
+
+      if (!title || !category_id || !short_summary || !detailed_description || !safety_precautions || !expected_results) {
+        api.toast('Please fill in all mandatory fields, including title, safety precautions and expected results.', 'warning');
+        return;
+      }
+
+      // Gather tools
+      const tools = [];
+      document.querySelectorAll('#tools-container .tool-row').forEach(row => {
+        const name = row.querySelector('.tool-name').value.trim();
+        const local_name = row.querySelector('.tool-local').value.trim();
+        const specification = row.querySelector('.tool-spec').value.trim();
+        if (name) tools.push({ name, local_name, specification });
+      });
+
+      // Gather materials
+      const materials = [];
+      document.querySelectorAll('#materials-container .material-row').forEach(row => {
+        const name = row.querySelector('.mat-name').value.trim();
+        const local_name = row.querySelector('.mat-local').value.trim();
+        const quantity = row.querySelector('.mat-qty').value.trim();
+        const unit = row.querySelector('.mat-unit').value.trim();
+        const source_location = row.querySelector('.mat-source').value.trim();
+        if (name) materials.push({ name, local_name, quantity, unit, source_location });
+      });
+
+      // Gather steps
+      const steps = [];
+      document.querySelectorAll('#steps-container .step-card').forEach(c => {
+        const sTitle = c.querySelector('.step-title-input').value.trim();
+        const instruction = c.querySelector('.step-instruction-input').value.trim();
+        const image_url = c.querySelector('.step-img-input').value.trim();
+        const safety_warning = c.querySelector('.step-safety-input').value.trim();
+        const tip = c.querySelector('.step-tip-input').value.trim();
+        if (sTitle && instruction) {
+          steps.push({ title: sTitle, instruction, image_url, safety_warning, tip });
+        }
+      });
+
+      if (steps.length === 0) {
+        api.toast('At least one procedural step is required.', 'warning');
+        return;
+      }
+
+      const body = {
+        title,
+        local_name,
+        community_region: document.getElementById('community_region').value.trim(),
+        category_id,
+        skill_level: document.getElementById('skill_level').value,
+        estimated_time_minutes: parseInt(document.getElementById('estimated_time_minutes').value, 10),
+        short_summary,
+        cultural_background: document.getElementById('cultural_background').value.trim(),
+        detailed_description,
+        material_sourcing: document.getElementById('material_sourcing').value.trim(),
+        preparation_instructions: document.getElementById('preparation_instructions').value.trim(),
+        cover_image_url: document.getElementById('cover_image_url').value.trim() || '/assets/images/category-basket.svg',
+        demo_video_url: document.getElementById('demo_video_url').value.trim(),
+        visibility_level: document.getElementById('visibility_level').value,
+        safety_precautions,
+        common_mistakes: document.getElementById('common_mistakes').value.trim(),
+        mistake_solutions: document.getElementById('mistake_solutions').value.trim(),
+        expected_results,
+        references_sources: document.getElementById('references_sources').value.trim(),
+        attribution_consent: document.getElementById('attribution_consent').value.trim(),
+        submit_for_review: submitForReview,
+        tools,
+        materials,
+        steps
+      };
+
+      try {
+        if (editKnowledgeId) {
+          await api.put(`/knowledge/${editKnowledgeId}`, body);
+          api.toast(submitForReview ? 'Craft submitted for peer review!' : 'Draft updated successfully!', 'success');
+        } else {
+          await api.post('/knowledge', body);
+          api.toast(submitForReview ? 'Craft submitted for peer review!' : 'Draft saved successfully!', 'success');
+        }
+
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 800);
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

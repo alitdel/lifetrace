@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Immutable Security Audit Trail – LifeTrace Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--rose-600);">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+        <div>
+          <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:8px;">Compliance & Non-Repudiation</span>
+          <h1 style="font-size:2rem;font-weight:800;color:var(--white);">System Audit & Security Trail</h1>
+          <p style="color:var(--slate-300);font-size:1rem;margin-top:4px;">
+            Immutable event logging of all authentication, submission, review approval, and administrative transactions.
+          </p>
+        </div>
+
+        <a href="/admin.html" class="btn btn-outline-white btn-sm"><i class="fas fa-arrow-left"></i> Admin Console</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Filter bar -->
+    <div class="card" style="padding:20px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;gap:12px;align-items:center;">
+        <input type="text" id="audit-search" class="form-control" placeholder="Search by username, action, or record ID..." onkeyup="if(event.key==='Enter') loadLogs(1)">
+
+        <select id="audit-module" class="form-control" onchange="loadLogs(1)">
+          <option value="all">All Modules</option>
+          <option value="AUTH">Authentication (AUTH)</option>
+          <option value="KNOWLEDGE">Knowledge Capture</option>
+          <option value="REVIEW">Review Verification</option>
+          <option value="LEARNING">Learning & Progress</option>
+          <option value="ASSESSMENT">Assessments</option>
+          <option value="CERTIFICATES">Certificates</option>
+          <option value="ADMIN">Administrative</option>
+          <option value="SYSTEM">System Initialization</option>
+        </select>
+
+        <select id="audit-limit" class="form-control" onchange="loadLogs(1)">
+          <option value="25">Show 25 records</option>
+          <option value="50">Show 50 records</option>
+          <option value="100">Show 100 records</option>
+        </select>
+
+        <button class="btn btn-teal" onclick="loadLogs(1)"><i class="fas fa-filter"></i> Filter</button>
+      </div>
+    </div>
+
+    <!-- Audit Logs Table -->
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Timestamp (UTC)</th>
+              <th>Actor & Role</th>
+              <th>Action Code</th>
+              <th>Module</th>
+              <th>Target Record</th>
+              <th>IP Address</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i> Loading audit trail...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const meRes = await api.get('/auth/me');
+        if (!meRes.authenticated || meRes.user.role !== 'admin') {
+          api.toast('Audit log inspection is restricted to platform administrators.', 'error');
+          setTimeout(() => window.location.href = '/dashboard.html', 1000);
+          return;
+        }
+
+        await loadLogs(1);
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    });
+
+    async function loadLogs(page = 1) {
+      const search = document.getElementById('audit-search').value.trim();
+      const module = document.getElementById('audit-module').value;
+      const limit = document.getElementById('audit-limit').value;
+      const tbody = document.getElementById('audit-tbody');
+
+      try {
+        const res = await api.get('/audit-logs', { search, module, page, limit });
+        const logs = res.logs || [];
+
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#64748b;">No audit records matching query.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = logs.map(l => `
+          <tr>
+            <td style="font-family:monospace;font-size:0.8rem;color:var(--slate-500);white-space:nowrap;">
+              ${new Date(l.created_at).toISOString().replace('T', ' ').substring(0, 19)}
+            </td>
+            <td>
+              <div style="font-weight:700;color:var(--navy-900);font-size:0.88rem;">${l.username}</div>
+              <span class="badge" style="font-size:0.65rem;padding:2px 6px;background:#f1f5f9;color:#475569;">${l.role}</span>
+            </td>
+            <td>
+              <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.8rem;color:var(--navy-900);font-weight:700;">${l.action}</code>
+            </td>
+            <td><span class="badge badge-skill">${l.module}</span></td>
+            <td><span style="font-family:monospace;font-size:0.8rem;">${l.record_id || '-'}</span></td>
+            <td><span style="font-size:0.8rem;color:var(--slate-500);">${l.ip_address || '127.0.0.1'}</span></td>
+            <td>
+              ${l.details_json ? `
+                <button class="btn btn-outline btn-sm" style="font-size:0.75rem;padding:2px 8px;" onclick="alert('Audit Details for ID #${l.id}:\\n' + JSON.stringify(${l.details_json.replace(/"/g, '&quot;')}, null, 2))">
+                  View JSON
+                </button>
+              ` : '<span style="color:#94a3b8;">-</span>'}
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red;padding:20px;text-align:center;">${err.message}</td></tr>`;
+      }
+    }
+  </script>
+</body>
+</html>
+

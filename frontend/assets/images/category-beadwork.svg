@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+
+  <defs>
+    <linearGradient id="beadBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#4C1D95" />
+      <stop offset="100%" stop-color="#1E1B4B" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#beadBg)"/>
+
+  <!-- Swirling Ugandan Recycled Paper Bead & Cowrie Shell Necklace -->
+  <g transform="translate(400, 240)">
+    <!-- Shadow -->
+    <ellipse cx="0" cy="140" rx="220" ry="35" fill="rgba(0,0,0,0.45)"/>
+    
+    <!-- Outer string loop -->
+    <path d="M -180 -120 C -220 80, -140 140, 0 140 C 140 140, 220 80, 180 -120" fill="none" stroke="#E2E8F0" stroke-width="3"/>
+
+    <!-- Multicolored Spiraled Paper Beads -->
+    <!-- Bead helper loop -->
+    <g transform="translate(-167.4, 20.8) rotate(80)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-161.7, 37.1) rotate(72)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#10B981" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-152.8, 52.6) rotate(64)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-140.9, 67.1) rotate(56)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#EF4444" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-126.3, 80.3) rotate(48)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#F97316" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-109.3, 91.9) rotate(40)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-90.1, 101.8) rotate(32)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#EC4899" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-69.1, 109.6) rotate(24)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-46.9, 115.4) rotate(16)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#10B981" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(-23.7, 118.8) rotate(8)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(0.0, 120.0) rotate(0)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#EF4444" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(23.7, 118.8) rotate(-8)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(46.9, 115.4) rotate(-16)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#10B981" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(69.1, 109.6) rotate(-24)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(90.1, 101.8) rotate(-32)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#EC4899" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(109.3, 91.9) rotate(-40)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(126.3, 80.3) rotate(-48)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#F97316" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(140.9, 67.1) rotate(-56)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#EF4444" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(152.8, 52.6) rotate(-64)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(161.7, 37.1) rotate(-72)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#10B981" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g><g transform="translate(167.4, 20.8) rotate(-80)">
+          <ellipse cx="0" cy="0" rx="14" ry="9" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+          <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+        </g>
+
+    <!-- Center Cowrie Shell (Ensimbi) Pendant -->
+    <g transform="translate(0, 120)">
+      <ellipse cx="0" cy="20" rx="22" ry="32" fill="#FEF3C7" stroke="#92400E" stroke-width="3"/>
+      <ellipse cx="0" cy="20" rx="5" ry="20" fill="#78350F"/>
+      <!-- Serrated ridges -->
+      <line x1="-8" y1="12" x2="-2" y2="12" stroke="#78350F" stroke-width="2"/>
+      <line x1="2" y1="12" x2="8" y2="12" stroke="#78350F" stroke-width="2"/>
+      <line x1="-8" y1="20" x2="-2" y2="20" stroke="#78350F" stroke-width="2"/>
+      <line x1="2" y1="20" x2="8" y2="20" stroke="#78350F" stroke-width="2"/>
+      <line x1="-8" y1="28" x2="-2" y2="28" stroke="#78350F" stroke-width="2"/>
+      <line x1="2" y1="28" x2="8" y2="28" stroke="#78350F" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- Title Badge Overlay -->
+  <rect x="40" y="380" width="370" height="80" rx="12" fill="rgba(15,23,42,0.85)" stroke="rgba(168,85,247,0.5)" stroke-width="1.5"/>
+  <text x="60" y="414" fill="#C084FC" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="1">ORNAMENTAL ARTISANRY</text>
+  <text x="60" y="442" fill="#FFFFFF" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="800">Beadwork (Enkwanzi)</text>
+
+</svg>
