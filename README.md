@@ -277,40 +277,6 @@ LifeTrace includes an automated test runner (`backend/tests/api.test.js`) valida
 npm test
 ```
 
-Expected output:
-```
-========================================================
-   LifeTrace Automated Verification & Test Suite        
-========================================================
-
-  [PASS] Authentication: Logout destroys the server session and clears session cookies
-  [PASS] Authentication: Login regenerates session ID to prevent session fixation
-  [PASS] Authentication: getMe returns reviewer_profiles for authenticated reviewers
-  [PASS] Database: Relational engine connects and loads categories
-  [PASS] User Management: Four distinct roles exist in system
-  [PASS] Security: Passwords stored as authentic bcrypt hashes
-  [PASS] Expert Profiles: Seeded experts have detailed practical profile data
-  [PASS] Knowledge Capture: Records contain local names, cultural background, raw material sourcing, steps, tools, materials, and safety
-  [PASS] Review Workflow: Formal review decisions and history are recorded
-  [PASS] Knowledge Library: Public library queries exclude unpublished drafts
-  [PASS] Knowledge visibility: Public, learner-only, and restricted records enforce access rules
-  [PASS] Learning Management: Learner step completion and percentage calculation
-  [PASS] Practical Assessment: Practical submission evidence graded by assessor
-  [PASS] Assessment Quiz: Assessment questions and evaluation records exist
-  [PASS] Certificates: Authentic unique certificate verification by reference code
-  [PASS] Practical Evidence: Learner submission contains multi-angle photo evidence records
-  [PASS] Reviewer Profiles: Verified reviewer profiles and review assignments exist
-  [PASS] Notifications: User notification dispatch and read-state management
-  [PASS] Audit Trail: System and user actions recorded in audit log table
-  [PASS] System Settings: Platform configurations loaded from database
-  [PASS] Security: Public registration restriction prevents unauthorized Admin/Reviewer signups
-  [PASS] Storage: Upload directories configured and accessible
-
-========================================================
-  Test Suite Completed: 22 Passed, 0 Failed
-========================================================
-```
-
 ---
 
 ## 11. Project Directory Structure
@@ -322,6 +288,7 @@ lifetrace/
 ├── .gitignore                      # Git source control exclusions (secrets, uploads, dev db)
 ├── .env.example                    # Comprehensive production environment template
 ├── render.yaml                     # Render Cloud Blueprint deployment specification
+├── fly.toml                        # Fly.io deployment configuration
 ├── package.json                    # Node.js project manifest & scripts (engines: >=18.0.0)
 ├── README.md                       # Complete technical & deployment documentation
 ├── backend/

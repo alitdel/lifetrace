@@ -21,6 +21,7 @@ RUN npm ci --only=production
 # Copy application source code
 COPY backend ./backend
 COPY frontend ./frontend
+COPY controllers ./controllers
 
 # Create upload directories and set permissions for node non-root user
 RUN mkdir -p backend/uploads/media backend/uploads/avatars backend/uploads/submissions \

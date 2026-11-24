@@ -39,8 +39,9 @@ function getSslConfig() {
     };
 
     // If custom CA certificate is provided
-    if (process.env.DB_CA_PATH && fs.existsSync(process.env.DB_CA_PATH)) {
-      sslOptions.ca = fs.readFileSync(process.env.DB_CA_PATH, 'utf8');
+    const caPath = process.env.DB_CA_PATH || process.env.DB_SSL_CA;
+    if (caPath && fs.existsSync(caPath)) {
+      sslOptions.ca = fs.readFileSync(caPath, 'utf8');
     } else if (process.env.DB_CA) {
       sslOptions.ca = process.env.DB_CA;
     }
@@ -53,8 +54,8 @@ function getSslConfig() {
 
 /**
  * Initialize Database Connection
- * Production strictly enforces TiDB/MySQL.
- * SQLite is available only in development when explicitly configured.
+ * Production strictly enforces TiDB/MySQL with TLS.
+ * SQLite is available only in development when explicitly configured (DB_ENGINE=sqlite).
  */
 async function initializeDatabase() {
   if (dbClient) return;
@@ -112,8 +113,7 @@ async function initializeDatabase() {
           }),
 
         execute: (sql, params = []) => dbClient.query(sql, params),
-        rawDb: sqliteDb,
-        end: () => new Promise(resolve => sqliteDb.close(resolve))
+        end: () => new Promise((resolve) => sqliteDb.close(resolve))
       };
 
       activeEngine = 'sqlite';
@@ -122,54 +122,101 @@ async function initializeDatabase() {
     }
 
     // 2. TiDB Cloud / MySQL Engine
-    if (preferredEngine !== 'mysql') {
-      throw new Error(`Unsupported database engine: ${preferredEngine}. Supported: mysql, sqlite`);
-    }
-
     const mysql = require('mysql2/promise');
-    const dbHost = process.env.DB_HOST || '127.0.0.1';
-    const dbPort = Number(process.env.DB_PORT || (dbHost.includes('tidbcloud.com') ? 4000 : 3306));
-    const dbUser = process.env.DB_USER || 'root';
-    const dbPassword = process.env.DB_PASSWORD || '';
-    const dbName = process.env.DB_NAME || 'lifetrace_db';
-    const sslConfig = getSslConfig();
+
+    const host = process.env.DB_HOST || '127.0.0.1';
+    const port = parseInt(process.env.DB_PORT || '4000', 10);
+    const user = process.env.DB_USER || 'root';
+    const password = process.env.DB_PASSWORD || '';
+    const database = process.env.DB_NAME || 'lifetrace_db';
+    const ssl = getSslConfig();
 
     const poolConfig = {
-      host: dbHost,
-      port: dbPort,
-      user: dbUser,
-      password: dbPassword,
-      database: dbName,
-      ssl: sslConfig,
+      host,
+      port,
+      user,
+      password,
+      database,
+      ssl,
       waitForConnections: true,
-      connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10', 10),
+      connectionLimit: 15,
       queueLimit: 0,
       enableKeepAlive: true,
       keepAliveInitialDelay: 10000,
       connectTimeout: 20000
     };
 
-    const pool = mysql.createPool(poolConfig);
-
     try {
-      const [rows] = await pool.query('SELECT 1 AS connected');
+      const pool = mysql.createPool(poolConfig);
 
-      if (!rows || rows[0].connected !== 1) {
-        throw new Error('Database ping failed.');
-      }
+      // Verify connectivity
+      const connection = await pool.getConnection();
+      connection.release();
 
       dbClient = pool;
       activeEngine = 'mysql';
 
-      console.log(`[Database] Connected successfully to TiDB/MySQL (${dbHost}:${dbPort}/${dbName}, TLS: ${Boolean(sslConfig)})`);
+      const isTiDB = host.includes('tidbcloud.com') || port === 4000;
+      console.log(`[Database] Connected to ${isTiDB ? 'TiDB Cloud (MySQL)' : 'MySQL'} on ${host}:${port}/${database} (TLS: ${ssl ? 'Active' : 'Disabled'})`);
+
     } catch (error) {
-      await pool.end().catch(() => {});
+      console.error(`[Database Error] Failed to connect to ${host}:${port}/${database}`);
+      console.error(`[Database Error] Details: ${error.message}`);
 
-      // Safe error output without leaking passwords
-      console.error(`[Database Error] Connection failed to TiDB/MySQL at ${dbHost}:${dbPort}/${dbName}:`, error.message);
+      // Strict production requirement: Never silently fallback to SQLite in production
+      if (process.env.NODE_ENV === 'production' || process.env.STRICT_MYSQL === 'true') {
+        throw new Error(
+          `FATAL: Could not connect to production database (${host}:${port}/${database}). ` +
+          `Falling back to SQLite is strictly forbidden in production. Fix connection credentials. Error: ${error.message}`
+        );
+      }
 
-      // Never silently fall back to SQLite in production or when strict mode is active
-      throw error;
+      console.warn('[Database Warning] Falling back to embedded SQLite for local offline development.');
+
+      const sqlite3 = require('sqlite3').verbose();
+      const dbDir = path.resolve(__dirname, '../database');
+
+      if (!fs.existsSync(dbDir)) {
+        fs.mkdirSync(dbDir, { recursive: true });
+      }
+
+      const dbPath = path.join(dbDir, 'lifetrace.sqlite');
+      const sqliteDb = new sqlite3.Database(dbPath);
+
+      await new Promise((resolve, reject) => {
+        sqliteDb.run('PRAGMA foreign_keys = ON;', (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+
+      dbClient = {
+        query: (sql, params = []) =>
+          new Promise((resolve, reject) => {
+            const trimmed = sql.trim();
+            const isSelect = /^(SELECT|PRAGMA|SHOW)/i.test(trimmed);
+
+            if (isSelect) {
+              sqliteDb.all(sql, params, (err, rows) => {
+                if (err) return reject(err);
+                resolve([rows, null]);
+              });
+            } else {
+              sqliteDb.run(sql, params, function (err) {
+                if (err) return reject(err);
+                resolve([{
+                  insertId: this.lastID,
+                  affectedRows: this.changes
+                }, null]);
+              });
+            }
+          }),
+
+        execute: (sql, params = []) => dbClient.query(sql, params),
+        end: () => new Promise((resolve) => sqliteDb.close(resolve))
+      };
+
+      activeEngine = 'sqlite';
     }
   })();
 
@@ -182,7 +229,7 @@ async function initializeDatabase() {
 }
 
 /**
- * Standard database query helper
+ * Execute query on active database
  */
 async function query(sql, params = []) {
   if (!dbClient) {
@@ -192,11 +239,14 @@ async function query(sql, params = []) {
   try {
     return await dbClient.query(sql, params);
   } catch (error) {
-    console.error(
-      '[Database Query Error]',
-      error.message,
-      `| SQL: ${sql.substring(0, 120)}...`
-    );
+    // If pool lost connection, attempt re-initialization once
+    if (error.code === 'PROTOCOL_CONNECTION_LOST' || error.code === 'ECONNRESET') {
+      console.warn('[Database Warning] Connection lost. Attempting to re-establish connection pool...');
+      dbClient = null;
+      initializationPromise = null;
+      await initializeDatabase();
+      return await dbClient.query(sql, params);
+    }
     throw error;
   }
 }

@@ -70,7 +70,7 @@ const protectedPages = {
   '/settings.html': ['admin']
 };
 
-// 1. Security headers
+// 1. Security headers (Helmet)
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -332,20 +332,19 @@ async function startServer() {
       `[LifeTrace] Database engine: ${db.getEngine().toUpperCase()}`
     );
 
-    // Verify that the database schema exists.
-    // Never automatically initialize or seed the database here.
+    // Verify database schema; if not present, safely auto-initialize
     try {
       await db.query(
         'SELECT COUNT(*) AS count FROM users'
       );
-
       console.log(
         '[LifeTrace] Database schema verified successfully.'
       );
-    } catch (error) {
-      throw new Error(
-        `Database schema is not ready. Run the database setup first (npm run db:setup). Details: ${error.message}`
-      );
+    } catch (schemaError) {
+      console.log('[LifeTrace] Database schema not ready. Auto-initializing schema...');
+      const runInit = require('./database/init');
+      await runInit();
+      console.log('[LifeTrace] Database schema auto-initialized successfully.');
     }
 
     // Start the web server only after database verification

@@ -70,7 +70,8 @@
           <select id="demo-filter" class="form-control" style="margin-bottom:16px;">
             <option value="all">All craft categories</option>
           </select>
-          <div id="demo-video-list" class="stack-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+          <div style="font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate-500);margin-bottom:12px;">Demonstrations</div>
+          <div id="demo-video-list" style="display:flex;flex-direction:column;gap:10px;"></div>
         </div>
       </aside>
     </div>
@@ -81,21 +82,108 @@
   <script src="/js/api.js"></script>
   <script src="/js/app.js"></script>
   <script>
-    const demoVideos = window.DEMO_VIDEO_LIBRARY || [];
+    const demoVideos = [
+      {
+        id: 'basket-making',
+        category: 'Basket Making',
+        title: 'Uganda Coil Basket Weaving – Traditional Methods',
+        stage: 'Coil Weaving Technique',
+        description: 'Demonstration of coil basketry using natural fibers and a traditional awl.',
+        source: 'Ugandan Artisan Communities / Cultural Documentation',
+        sourceType: 'Educational Craft Documentation',
+        badge: 'Recommended technique',
+        videoUrl: 'https://www.youtube.com/watch?v=0kP0aWcKzD8',
+        thumbnail: '/assets/images/category-basket.svg'
+      },
+      {
+        id: 'mat-making',
+        category: 'Mat Making',
+        title: 'Traditional Palm Leaf Mat Weaving in Uganda',
+        stage: 'Slitting and Plain Weaving',
+        description: 'How palm fronds are harvested, dried and woven into traditional sleeping and floor mats.',
+        source: 'East African Traditional Crafts Channel',
+        sourceType: 'Vocational Demonstration',
+        badge: 'Hand technique',
+        videoUrl: 'https://www.youtube.com/watch?v=kYJmQ6y2M6g',
+        thumbnail: '/assets/images/category-mat.svg'
+      },
+      {
+        id: 'pottery',
+        category: 'Pottery and Clay Work',
+        title: 'Coil Built Earthenware Pot – Traditional Ugandan Technique',
+        stage: 'Coiling, Smoothing and Firing Prep',
+        description: 'Building a cooking vessel from local clay without a wheel, using natural shaping stones.',
+        source: 'Pottery Heritage Project Uganda',
+        sourceType: 'Practical Guide',
+        badge: 'Clay preparation',
+        videoUrl: 'https://www.youtube.com/watch?v=7b7pLqVjDk8',
+        thumbnail: '/assets/images/category-pottery.svg'
+      },
+      {
+        id: 'barkcloth',
+        category: 'Traditional Textiles',
+        title: 'UNESCO Recognized Mutuba Barkcloth Beating in Buganda',
+        stage: 'Bark Stripping and Wooden Mallet Beating',
+        description: 'Documentary demonstrating harvesting from the Mutuba tree and beating the fibers into cloth.',
+        source: 'Intangible Heritage Documentation',
+        sourceType: 'Cultural Preservation',
+        badge: 'UNESCO heritage',
+        videoUrl: 'https://www.youtube.com/watch?v=bC6_9QvRk4Y',
+        thumbnail: '/assets/images/category-barkcloth.svg'
+      },
+      {
+        id: 'beadwork',
+        category: 'Beadwork',
+        title: 'Ugandan Paper Bead Making – From Recycled Paper to Beads',
+        stage: 'Rolling, Gluing and Varnishing',
+        description: 'Tapering and tightly winding recycled paper into beads, followed by water-resistant sealing.',
+        source: 'Ugandan Women Craft Cooperatives',
+        sourceType: 'Artisan Tutorial',
+        badge: 'Upcycled craft',
+        videoUrl: 'https://www.youtube.com/watch?v=q6bY2qL9Z6w',
+        thumbnail: '/assets/images/category-beadwork.svg'
+      },
+      {
+        id: 'woodcraft',
+        category: 'Woodcraft and Carving',
+        title: 'Carving a Traditional Wooden Stool – Hand Adze Technique',
+        stage: 'Roughing and Seat Hollow Carving',
+        description: 'Shaping a three-legged stool from a single hardwood log with hand tools.',
+        source: 'Artisan Woodworkers Uganda',
+        sourceType: 'Woodcraft Demonstration',
+        badge: 'Hand tools',
+        videoUrl: 'https://www.youtube.com/watch?v=8w6vB7zXy1A',
+        thumbnail: '/assets/images/category-woodcraft.svg'
+      }
+    ];
+
     let selectedCategory = 'all';
 
     document.addEventListener('DOMContentLoaded', () => {
+      initDemoLibrary();
+    });
+
+    function initDemoLibrary() {
       renderCategoryPills();
       populateCategoryFilter();
       renderVideoList();
-      selectDemoVideo(getSelectedVideoId());
-    });
+      selectDemoVideo(getInitialVideoId());
+    }
 
-    function getSelectedVideoId() {
+    function normalizeVideoUrl(rawUrl) {
+      if (!rawUrl) return '';
+      if (rawUrl.includes('/embed/')) return rawUrl;
+      const match = rawUrl.match(/(?:watch\?v=|youtu\.be\/|embed\/)([\w-]{11})/);
+      if (match && match[1]) {
+        return `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0`;
+      }
+      return rawUrl;
+    }
+
+    function getInitialVideoId() {
       const params = new URLSearchParams(window.location.search);
       const requested = params.get('video');
-      if (!requested) return demoVideos[0] ? demoVideos[0].id : '';
-      return demoVideos.some(video => video.id === requested) ? requested : (demoVideos[0] ? demoVideos[0].id : '');
+      return demoVideos.some(v => v.id === requested) ? requested : (demoVideos[0] ? demoVideos[0].id : '');
     }
 
     function renderCategoryPills() {

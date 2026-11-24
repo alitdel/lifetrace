@@ -1,42 +1,39 @@
-/**
- * LifeTrace Authentic Traditional Craftsmanship Database Seeder
- * Fully compatible with TiDB Cloud, MySQL 8, and SQLite.
- * Safe for production: never overwrites existing administrator accounts.
- */
-
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 const db = require('../config/db');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
-require('dotenv').config({
-  path: path.join(__dirname, '../../.env')
-});
+/**
+ * Universal upsert helper for dual TiDB/MySQL and SQLite support
+ */
+async function upsert(table, columns, values, updateColumns = []) {
+  const engine = db.getEngine() || 'mysql';
+  const placeholders = columns.map(() => '?').join(', ');
+  const colList = columns.map(c => `\`${c}\``).join(', ');
+
+  if (engine === 'sqlite') {
+    const sql = `INSERT OR REPLACE INTO \`${table}\` (${colList}) VALUES (${placeholders});`;
+    return db.query(sql, values);
+  } else {
+    // MySQL / TiDB
+    let updateClause = '';
+    if (updateColumns.length > 0) {
+      updateClause = 'ON DUPLICATE KEY UPDATE ' + updateColumns.map(c => `\`${c}\`=VALUES(\`${c}\`)`).join(', ');
+    } else {
+      const lastCol = columns[columns.length - 1];
+      updateClause = `ON DUPLICATE KEY UPDATE \`${lastCol}\`=\`${lastCol}\``;
+    }
+    const sql = `INSERT INTO \`${table}\` (${colList}) VALUES (${placeholders}) ${updateClause};`;
+    return db.query(sql, values);
+  }
+}
 
 async function runSeed() {
-  console.log('====================================================');
-  console.log('   LifeTrace Traditional Craftsmanship Seeding     ');
-  console.log('====================================================');
-
+  console.log('=== LifeTrace Traditional Craftsmanship Database Seeding ===');
   await db.initializeDatabase();
   const engine = db.getEngine();
-  console.log(`[Seed] Active database engine: ${engine.toUpperCase()}`);
-
-  /**
-   * Safe universal upsert helper for TiDB/MySQL and SQLite
-   */
-  async function upsert(tableName, cols, vals, updateCols) {
-    const placeholders = vals.map(() => '?').join(', ');
-    if (engine === 'mysql') {
-      const colList = cols.map(c => `\`${c}\``).join(', ');
-      const updateList = updateCols.map(c => `\`${c}\`=VALUES(\`${c}\`)`).join(', ');
-      const sql = `INSERT INTO \`${tableName}\` (${colList}) VALUES (${placeholders}) ON DUPLICATE KEY UPDATE ${updateList}`;
-      await db.query(sql, vals);
-    } else {
-      const colList = cols.join(', ');
-      const sql = `INSERT OR REPLACE INTO ${tableName} (${colList}) VALUES (${placeholders})`;
-      await db.query(sql, vals);
-    }
-  }
+  console.log(`Using database engine: ${engine}`);
 
   // 1. Categories
   const categories = [
@@ -53,41 +50,42 @@ async function runSeed() {
   ];
 
   for (const cat of categories) {
-    await upsert('categories', ['id', 'name', 'slug', 'description', 'icon', 'is_active', 'display_order'], cat, ['name', 'description', 'icon', 'is_active']);
-  }
-  console.log(`[Seed] 10 craft categories seeded.`);
-
-  // 2. Check for existing Administrator to prevent overwriting
-  const [existingAdmins] = await db.query("SELECT id, username FROM users WHERE role = 'admin' OR id = 1");
-  const hasExistingAdmin = existingAdmins && existingAdmins.length > 0;
-
-  if (hasExistingAdmin) {
-    console.log(`[Seed Security] Existing administrator account preserved without modification.`);
+    await upsert('categories', ['id', 'name', 'slug', 'description', 'icon', 'is_active', 'display_order'], cat, ['name', 'description']);
   }
 
-  // Users
-  const users = [
-    // Only seed admin if no admin exists
-    ...(hasExistingAdmin ? [] : [
-      [1, 'admin', 'admin@lifetrace.ug', '$2a$10$8mxhZ.WT2xvfFIdT8pJ25eUyDLLPhM9JDThtk1egxEBHSugR3/87a', 'admin', 'System Administrator', '+256700000001', 'active', '/assets/avatars/admin.svg']
-    ]),
-    [2, 'joyce_nakato', 'joyce.nakato@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Mukyala Nalongo Joyce Nakato', '+256772111222', 'active', '/assets/avatars/joyce-nakato.svg'],
-    [3, 'isabirye_daudi', 'isabirye.daudi@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Mzee Isabirye Daudi', '+256701333444', 'active', '/assets/avatars/isabirye-daudi.svg'],
-    [4, 'florence_pottery', 'florence.namagembe@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Maama Florence Namagembe', '+256782555666', 'active', '/assets/avatars/florence-namagembe.svg'],
-    [5, 'aloysius_bark', 'aloysius.ssemwogerere@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Mzee Aloysius Ssemwogerere', '+256752888999', 'active', '/assets/avatars/aloysius-ssemwogerere.svg'],
-    [6, 'betty_beads', 'betty.auma@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Betty Auma', '+256704111333', 'active', '/assets/avatars/betty-auma.svg'],
-    [7, 'kezekia_brooms', 'kezekia.tumusiime@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Kezekia Tumusiime', '+256783222444', 'active', '/assets/avatars/kezekia-tumusiime.svg'],
-    [8, 'paulo_carver', 'paulo.sserwadda@lifetrace.ug', '$2a$10$INRMyIaMSqh9Up8txpYMfuu/VMyMxcbo.v7slpvJaOoBe2BfIWODy', 'expert', 'Master Carver Paulo Sserwadda', '+256751666777', 'active', '/assets/avatars/paulo-sserwadda.svg'],
-    [9, 'florence_review', 'florence.nalubega@lifetrace.ug', '$2a$10$5.2/ttAhVgaF7CySK9U9..MLN0b0e/B4fCntm/wrAK.fQkR1KGE1O', 'reviewer', 'Eng. Florence Nalubega', '+256752777888', 'active', '/assets/avatars/reviewer-florence.svg'],
-    [10, 'samuel_inspect', 'samuel.okello@lifetrace.ug', '$2a$10$5.2/ttAhVgaF7CySK9U9..MLN0b0e/B4fCntm/wrAK.fQkR1KGE1O', 'reviewer', 'Prof. Samuel Okello', '+256712999000', 'active', '/assets/avatars/reviewer-samuel.svg'],
-    [11, 'denis_kato', 'denis.kato@student.kyu.ac.ug', '$2a$10$j7D17QokFL6IzX1FiyUERerUltxHxfP31Ud0YqSTfxu3aX1oVYw6y', 'learner', 'Denis Kato', '+256703123456', 'active', '/assets/avatars/learner-denis.svg'],
-    [12, 'christine_amuge', 'christine.amuge@mak.ac.ug', '$2a$10$j7D17QokFL6IzX1FiyUERerUltxHxfP31Ud0YqSTfxu3aX1oVYw6y', 'learner', 'Christine Amuge', '+256784654321', 'active', '/assets/avatars/learner-christine.svg']
+  // 2. Users (4 Roles: Admin, Expert, Reviewer, Learner)
+  const defaultSalt = await bcrypt.genSalt(10);
+  const defaultHash = await bcrypt.hash('Admin@LifeTrace2025', defaultSalt);
+  const artisanHash = await bcrypt.hash('Artisan@2025', defaultSalt);
+  const learnerHash = await bcrypt.hash('Learner@2025', defaultSalt);
+
+  // Check if admin already exists so we NEVER overwrite real admin credentials
+  const [existingAdmin] = await db.query('SELECT id, password_hash FROM users WHERE id = 1 OR username = "admin"');
+  if (existingAdmin && existingAdmin.length > 0) {
+    console.log('[Seed Security] Existing administrator account preserved without modification.');
+  } else {
+    await upsert('users', ['id', 'username', 'email', 'password_hash', 'role', 'full_name', 'phone', 'status', 'avatar_url'],
+      [1, 'admin', 'admin@lifetrace.ug', defaultHash, 'admin', 'System Administrator', '+256700000001', 'active', '/assets/avatars/admin.svg'],
+      ['role', 'full_name', 'phone']);
+  }
+
+  const artisansAndReviewers = [
+    [2, 'joyce_nakato', 'joyce.nakato@lifetrace.ug', artisanHash, 'expert', 'Mukyala Nalongo Joyce Nakato', '+256772111222', 'active', '/assets/avatars/joyce-nakato.svg'],
+    [3, 'isabirye_daudi', 'isabirye.daudi@lifetrace.ug', artisanHash, 'expert', 'Mzee Isabirye Daudi', '+256701333444', 'active', '/assets/avatars/isabirye-daudi.svg'],
+    [4, 'florence_pottery', 'florence.namagembe@lifetrace.ug', artisanHash, 'expert', 'Maama Florence Namagembe', '+256782555666', 'active', '/assets/avatars/florence-namagembe.svg'],
+    [5, 'aloysius_bark', 'aloysius.ssemwogerere@lifetrace.ug', artisanHash, 'expert', 'Mzee Aloysius Ssemwogerere', '+256752888999', 'active', '/assets/avatars/aloysius-ssemwogerere.svg'],
+    [6, 'betty_beads', 'betty.auma@lifetrace.ug', artisanHash, 'expert', 'Betty Auma', '+256704111333', 'active', '/assets/avatars/betty-auma.svg'],
+    [7, 'kezekia_brooms', 'kezekia.tumusiime@lifetrace.ug', artisanHash, 'expert', 'Kezekia Tumusiime', '+256783222444', 'active', '/assets/avatars/kezekia-tumusiime.svg'],
+    [8, 'paulo_carver', 'paulo.sserwadda@lifetrace.ug', artisanHash, 'expert', 'Master Carver Paulo Sserwadda', '+256751666777', 'active', '/assets/avatars/paulo-sserwadda.svg'],
+    [9, 'florence_review', 'florence.nalubega@lifetrace.ug', artisanHash, 'reviewer', 'Eng. Florence Nalubega', '+256752777888', 'active', '/assets/avatars/reviewer-florence.svg'],
+    [10, 'samuel_inspect', 'samuel.okello@lifetrace.ug', artisanHash, 'reviewer', 'Prof. Samuel Okello', '+256712999000', 'active', '/assets/avatars/reviewer-samuel.svg'],
+    [11, 'denis_kato', 'denis.kato@student.kyu.ac.ug', learnerHash, 'learner', 'Denis Kato', '+256703123456', 'active', '/assets/avatars/learner-denis.svg'],
+    [12, 'christine_amuge', 'christine.amuge@mak.ac.ug', learnerHash, 'learner', 'Christine Amuge', '+256784654321', 'active', '/assets/avatars/learner-christine.svg']
   ];
 
-  for (const u of users) {
-    await upsert('users', ['id', 'username', 'email', 'password_hash', 'role', 'full_name', 'phone', 'status', 'avatar_url'], u, ['full_name', 'phone', 'status']);
+  for (const u of artisansAndReviewers) {
+    await upsert('users', ['id', 'username', 'email', 'password_hash', 'role', 'full_name', 'phone', 'status', 'avatar_url'], u, ['full_name', 'role']);
   }
-  console.log(`[Seed] Users seeded across all 4 roles.`);
 
   // 3. Expert Profiles
   const expertProfiles = [
@@ -101,7 +99,7 @@ async function runSeed() {
   ];
 
   for (const ep of expertProfiles) {
-    await upsert('expert_profiles', ['user_id', 'bio', 'areas_of_expertise', 'experience_years', 'organization_or_trade', 'location', 'contact_email', 'contact_phone', 'public_profile_visible', 'verified_expert'], ep, ['bio', 'areas_of_expertise', 'experience_years', 'location']);
+    await upsert('expert_profiles', ['user_id', 'bio', 'areas_of_expertise', 'experience_years', 'organization_or_trade', 'location', 'contact_email', 'contact_phone', 'public_profile_visible', 'verified_expert'], ep, ['bio', 'experience_years']);
   }
 
   // 4. Learner Profiles
@@ -111,7 +109,7 @@ async function runSeed() {
   ];
 
   for (const lp of learnerProfiles) {
-    await upsert('learner_profiles', ['user_id', 'bio', 'education_level', 'primary_interest', 'location'], lp, ['bio', 'education_level', 'primary_interest']);
+    await upsert('learner_profiles', ['user_id', 'bio', 'education_level', 'primary_interest', 'location'], lp, ['bio', 'education_level']);
   }
 
   // 5. Reviewer Profiles
@@ -121,18 +119,14 @@ async function runSeed() {
   ];
 
   for (const rp of reviewerProfiles) {
-    await upsert('reviewer_profiles', ['user_id', 'qualification', 'specialization_domains', 'institution_or_guild', 'assigned_reviews_count'], rp, ['qualification', 'specialization_domains']);
+    await upsert('reviewer_profiles', ['user_id', 'qualification', 'specialization_domains', 'institution_or_guild', 'assigned_reviews_count'], rp, ['qualification']);
   }
 
   // 6. Knowledge Records
-  const records = [
-    // 1: Basket Making
+  const craftRecords = [
     [
-      1, 2, 1,
-      'Handwoven Coil Basket with Natural Dyes',
-      'Okuluka Ebibbo ky\'Enkwanzi n\'Akaseero',
-      'Buganda / Masaka & Wakiso',
-      'handwoven-coil-basket-ebibbo',
+      1, 2, 1, 'Handwoven Coil Basket with Natural Dyes', 'Okuluka Ebibbo ky\'Enkwanzi n\'Akaseero',
+      'Buganda / Masaka & Wakiso', 'handwoven-coil-basket-ebibbo',
       'A comprehensive guide to crafting authentic Ugandan coiled baskets using dried banana pseudostem core and dyed raffia fiber.',
       'In Buganda and throughout Central Uganda, the coiled basket (Ekibbo) is an enduring emblem of hospitality, sacred harvest storage, and marriage ceremonies (Kwanjula). This module codifies the exact coil-start method, figure-eight stitching, natural vegetable dye preparation from local marigolds and hibiscus, and structural wall elevation.',
       'Historically, young craft apprentices were taught to read the tension of the raffia by touch. The central spiral knot (Omutwe gw\'ekibbo) symbolizes ancestral lineage, and the geometric outward rays represent the rising sun bringing health and agricultural fertility to the homestead.',
@@ -146,17 +140,12 @@ async function runSeed() {
       'A resilient, symmetrical coiled basket capable of holding 5kg of dry grain, with tight water-resistant weave and vibrant natural color patterns.',
       'Buganda Traditional Artisans Guild Standards, Ministry of Gender, Labour & Social Development (MGLSD) Cultural Craft Guidelines.',
       'Documented and published with the informed community consent of the Mpigi & Masaka Traditional Weavers Collective. Full attribution remains with master craftsperson Mukyala Joyce Nakato.',
-      '/assets/images/basket-coiling-cover.svg',
-      '/uploads/media/demo-video-basket.mp4',
-      'published', 9, '2026-01-10 10:00:00', '2026-01-12 14:30:00', 342, 1
+      '/assets/images/basket-coiling-cover.svg', '/uploads/media/demo-video-basket.mp4', 'published', 9,
+      '2026-01-10 10:00:00', '2026-01-12 14:30:00', 342, 1
     ],
-    // 2: Mat Making
     [
-      2, 3, 2,
-      'Traditional Palm Leaf Floor and Sleeping Mat',
-      'Okuluka Omwekeeka gw\'Enkindu n\'Ebitoogo',
-      'Busoga / Jinja & Kamuli',
-      'traditional-palm-mat-omwekeeka',
+      2, 3, 2, 'Traditional Palm Leaf Floor and Sleeping Mat', 'Okuluka Omwekeeka gw\'Enkindu n\'Ebitoogo',
+      'Busoga / Jinja & Kamuli', 'traditional-palm-mat-omwekeeka',
       'Step-by-step master instructions for harvesting, splitting, sun-curing, and weaving large geometric sleeping mats.',
       'The traditional Ugandan palm reed mat (Omwekeeka) is an indispensable household craft. Placed on earthen or tiled floors, it serves as a cool seating mat, resting couch, and ceremonial carpet. This guide covers precision splitting of Phoenix reclinata (Enkindu) fronds, geometric herringbone twill interlacing (Amabaati pattern), and double-folded border binding.',
       'In Busoga and neighboring communities, the gift of a finely woven Omwekeeka marks respect during child dedication ceremonies and elder visits. The geometric chevron patterns signify continuous flowing river waters.',
@@ -170,17 +159,12 @@ async function runSeed() {
       'A dense, flat-laying 1.8m x 1.2m traditional mat featuring crisp two-color geometric chevron twill with bonded unravel-proof hems.',
       'Busoga Cultural Heritage Crafts Documentation, Jinja Artisanal Trades Federation.',
       'Preserved under community consent protocols. Attribution affirmed to Mzee Isabirye Daudi and Jinja Craft Artisans.',
-      '/assets/images/palm-mat-cover.svg',
-      '/uploads/media/demo-video-mat.mp4',
-      'published', 9, '2026-01-15 09:00:00', '2026-01-18 11:15:00', 218, 1
+      '/assets/images/palm-mat-cover.svg', '/uploads/media/demo-video-mat.mp4', 'published', 9,
+      '2026-01-15 09:00:00', '2026-01-18 11:15:00', 218, 1
     ],
-    // 3: Pottery and Clay Work
     [
-      3, 4, 3,
-      'Hand-Coiled Earthen Water and Cooking Pot',
-      'Okubumba Ensumbi n\'Ebibya by\'Ebbumba',
-      'Central Uganda / Mukono & Seeta',
-      'hand-coiled-pottery-ensumbi',
+      3, 4, 3, 'Hand-Coiled Earthen Water and Cooking Pot', 'Okubumba Ensumbi n\'Ebibya by\'Ebbumba',
+      'Central Uganda / Mukono & Seeta', 'hand-coiled-pottery-ensumbi',
       'Ancient coil-building, calabash rib burnishing, and open-pit grass firing techniques for porous cooling water vessels.',
       'Before modern refrigeration, the porous earthenware vessel (Ensumbi) provided natural evaporative cooling, keeping drinking water refreshing and crisp in tropical climates. This module codifies the extraction of anthill clay, tempering with crushed grog potsherds, coil elevation, pebble burnishing, and traditional pit bonfire firing.',
       'In traditional Ugandan homesteads, water from the Ensumbi was offered to welcoming guests as a blessing of peace (Emirembe). The reddish-ochre burnish was achieved by polishing with river pebbles gathered from sacred streams.',
@@ -194,17 +178,12 @@ async function runSeed() {
       'A balanced, sound-ringing 10-litre traditional water jug with smooth burnished sheen and decorative shoulder chevron incisions.',
       'Uganda Department of Museums and Monuments Ceramic Preservation Records.',
       'Documented with the traditional consent of Seeta Village Potters Association. Attributed to Maama Florence Namagembe.',
-      '/assets/images/clay-pot-cover.svg',
-      '/uploads/media/demo-video-pottery.mp4',
-      'published', 10, '2026-01-20 12:00:00', '2026-01-22 16:45:00', 289, 1
+      '/assets/images/clay-pot-cover.svg', '/uploads/media/demo-video-pottery.mp4', 'published', 10,
+      '2026-01-20 12:00:00', '2026-01-22 16:45:00', 289, 1
     ],
-    // 4: Royal Bark Cloth
     [
-      4, 5, 7,
-      'Traditional Royal Bark Cloth Making (Olubugo)',
-      'Olubugo lw\'Omutuba – UNESCO Heritage Craft',
-      'Bukomansimbi & Masaka',
-      'traditional-royal-bark-cloth-olubugo',
+      4, 5, 7, 'Traditional Royal Bark Cloth Making (Olubugo)', 'Olubugo lw\'Omutuba – UNESCO Heritage Craft',
+      'Bukomansimbi & Masaka', 'traditional-royal-bark-cloth-olubugo',
       'UNESCO-recognized intangible cultural heritage craft of peeling, steaming, and grooved mallet beating of Mutuba tree bark.',
       'Bark cloth making by the Baganda people of Southern Uganda is one of humanity\'s oldest non-woven fabric technologies, officially proclaimed a Masterpiece of the Oral and Intangible Heritage of Humanity by UNESCO in 2005. This module documents the precise annular harvesting cuts that allow the Mutuba tree (Ficus natalensis) to survive and regenerate its bark, followed by rhythmic grooved mallet expansion (Ensaamu) and sun-curing to produce rich terracotta rust cloth.',
       'Historically worn by Ugandan royalty, bark cloth embodies ecological harmony: trees are never felled, but rather harvested and wrapped in fresh banana leaves to heal. Each mallet strike follows sacred rhythms passed down over 600 years.',
@@ -218,17 +197,12 @@ async function runSeed() {
       'A continuous 3m x 2m supple sheet of authentic royal terracotta bark cloth with uniform thickness, soft suede drape, and distinctive grooved mallet rib texture.',
       'UNESCO Convention for the Safeguarding of the Intangible Cultural Heritage, Buganda Royal Barkcloth Artisans Guild.',
       'Documented under strict cultural heritage stewardship protocols. Permanent attribution to Mzee Aloysius Ssemwogerere.',
-      '/assets/images/bark-cloth-cover.svg',
-      '/uploads/media/demo-video-barkcloth.mp4',
-      'published', 10, '2026-01-25 14:00:00', '2026-01-28 09:30:00', 412, 1
+      '/assets/images/bark-cloth-cover.svg', '/uploads/media/demo-video-barkcloth.mp4', 'published', 10,
+      '2026-01-25 14:00:00', '2026-01-28 09:30:00', 412, 1
     ],
-    // 5: Household Brooms
     [
-      5, 7, 8,
-      'Handmade Palm Frond Sweeping Broom (Olweyo)',
-      'Olweyo lw\'Enkindu n\'Emiguwa',
-      'Kigezi Highlands / Kabale',
-      'handmade-palm-broom-olweyo',
+      5, 7, 8, 'Handmade Palm Frond Sweeping Broom (Olweyo)', 'Olweyo lw\'Enkindu n\'Emiguwa',
+      'Kigezi Highlands / Kabale', 'handmade-palm-broom-olweyo',
       'Crafting durable, flexible traditional homestead sweeping brooms from wild dwarf palm midribs and cross-braided sisal cord.',
       'The traditional Ugandan hand broom (Olweyo) remains the most effective, zero-plastic tool for sweeping courtyards, compound lawns, and vernacular houses. This guide demonstrates the sorting of stiff date palm midribs, cylindrical bundling under vice tension, and authentic diagonal cross-knotted handle binding.',
       'In Southwestern Uganda homesteads, a well-kept Olweyo signifies cleanliness, diligence, and pride in domestic order.',
@@ -242,17 +216,12 @@ async function runSeed() {
       'A balanced, comfortable-grip sweeping broom measuring 75cm with flexible fanning bristles and tight woven handle binding that lasts over two years.',
       'Kigezi Vocational Household Technologies Survey, Uganda Small Scale Industries Association.',
       'Attributed to Kezekia Tumusiime with community consent.',
-      '/assets/images/handmade-broom-cover.svg',
-      '/uploads/media/demo-video-broom.mp4',
-      'published', 9, '2026-02-01 10:00:00', '2026-02-03 14:00:00', 165, 0
+      '/assets/images/handmade-broom-cover.svg', '/uploads/media/demo-video-broom.mp4', 'published', 9,
+      '2026-02-01 10:00:00', '2026-02-03 14:00:00', 165, 0
     ],
-    // 6: Beadwork
     [
-      6, 6, 6,
-      'Ugandan Recycled Paper and Cowrie Shell Beadwork',
-      'Enkwanzi z\'Ebipapula n\'Ensimbi',
-      'Kampala & Jinja',
-      'paper-bead-cowrie-jewelry',
+      6, 6, 6, 'Ugandan Recycled Paper and Cowrie Shell Beadwork', 'Enkwanzi z\'Ebipapula n\'Ensimbi',
+      'Kampala & Jinja', 'paper-bead-cowrie-jewelry',
       'Creating vibrant, water-resistant rolled paper beads combined with authentic polished cowrie shells for bracelets and necklaces.',
       'Ugandan paper bead jewelry originated as a creative community initiative and has grown into a globally celebrated artisanal movement. This guide covers precision tapering of discarded paper, tight needle rolling, non-toxic waterproof glazing, and stringing with traditional cowrie shells (Ensimbi).',
       'Cowrie shells historically served as currency in pre-colonial East Africa and continue to symbolize abundance and protection.',
@@ -266,17 +235,12 @@ async function runSeed() {
       'A vibrant 45cm traditional beaded necklace featuring 35 water-resistant paper beads spaced with authentic polished cowrie shell accents.',
       'Uganda Women Artisans Cooperative Federation.',
       'Documented and shared with consent of Kampala Artisans Network. Attributed to Betty Auma.',
-      '/assets/images/paper-bead-cover.svg',
-      '/uploads/media/demo-video-beads.mp4',
-      'published', 9, '2026-02-05 11:00:00', '2026-02-08 15:30:00', 194, 0
+      '/assets/images/paper-bead-cover.svg', '/uploads/media/demo-video-beads.mp4', 'published', 9,
+      '2026-02-05 11:00:00', '2026-02-08 15:30:00', 194, 0
     ],
-    // 7: Woodcraft / Stool
     [
-      7, 8, 5,
-      'Carved Three-Legged Hardwood Stool',
-      'Entebe y\'Ekiganda ey\'Amagulu Asatu',
-      'Mpigi Craft Village',
-      'carved-three-legged-wooden-stool',
+      7, 8, 5, 'Carved Three-Legged Hardwood Stool', 'Entebe y\'Ekiganda ey\'Amagulu Asatu',
+      'Mpigi Craft Village', 'carved-three-legged-wooden-stool',
       'Traditional carving of an ergonomic royal three-legged stool from a single green log of indigenous Mvule timber.',
       'The three-legged stool (Entebe y\'amagulu asatu) is carved from a single piece of solid wood without nails, glue, or metal joints. Its three splayed legs provide rock-solid stability even on uneven earthen homestead surfaces. This module covers timber selection, adze roughing, concave seat dishing, and traditional geometric scorched ornamentation.',
       'Traditionally, the elder of the household held an exclusive stool carved by hereditary artisans. The curved seat mirrors the natural curvature of the human pelvis for long comfort.',
@@ -290,13 +254,12 @@ async function runSeed() {
       'A masterfully balanced, single-piece three-legged hardwood stool bearing smooth hand-adzed facets and a natural beeswax luster.',
       'Mpigi Woodcarvers Guild Standards.',
       'Submitted by Master Carver Paulo Sserwadda. Pending technical review and safety standards approval.',
-      '/assets/images/wooden-stool-cover.svg',
-      '/uploads/media/demo-video-wood.mp4',
-      'submitted', null, null, null, 14, 0
+      '/assets/images/wooden-stool-cover.svg', '/uploads/media/demo-video-wood.mp4', 'submitted', null,
+      null, null, 14, 0
     ]
   ];
 
-  const recordCols = [
+  const knowledgeRecordCols = [
     'id', 'expert_id', 'category_id', 'title', 'local_name', 'community_region', 'slug', 'short_summary',
     'detailed_description', 'cultural_background', 'estimated_time_minutes', 'skill_level',
     'preparation_instructions', 'material_sourcing', 'safety_precautions', 'common_mistakes',
@@ -305,8 +268,8 @@ async function runSeed() {
     'approved_at', 'published_at', 'view_count', 'is_featured'
   ];
 
-  for (const r of records) {
-    await upsert('knowledge_records', recordCols, r, ['title', 'status', 'view_count']);
+  for (const r of craftRecords) {
+    await upsert('knowledge_records', knowledgeRecordCols, r, ['title', 'status', 'cover_image_url']);
   }
 
   // 7. Knowledge Visibility
@@ -314,141 +277,123 @@ async function runSeed() {
     await upsert('knowledge_visibility', ['id', 'knowledge_id', 'visibility_level', 'allow_comments', 'allow_assessments'], [i, i, 'public', 1, 1], ['visibility_level']);
   }
 
-  // 8. Knowledge Steps
+  // 8. Knowledge Steps (Basket Making Steps, Knowledge ID 1)
   const steps = [
     [1, 1, 1, 'Harvesting and Stripping Banana Pseudostem Sheath', 'Select mature dry banana pseudostems (Ebyai) from healthy plants. Using a small craft knife, slit the outer dry sheath lengthwise and peel into uniform 15mm-wide ribbons. Grade ribbons by thickness, setting aside softer inner layers for fine binding.', 'Inspect sheath for insect frass or mold.', 'Harvest on sunny mornings when relative humidity is lowest.', '/assets/images/basket-step-1.svg', null],
     [2, 1, 2, 'Boiling and Setting Natural Plant Dyes', 'In a small iron pot, boil crushed wild marigold petals with 2 litres of water for rich golden ochre, and dried hibiscus flowers for crimson red. Simmer stripped raffia fibers for 25 minutes. Add a pinch of wood ash as a natural mineral mordant to fix the dye.', 'Steam and boiling water hazard; use tongs.', 'Rinse dyed raffia in cool well water until runoff is crystal clear.', '/assets/images/basket-step-2.svg', null],
     [3, 1, 3, 'Coiling the Center Spiral Knot (Omutwe)', 'Take 6 fine strands of dried sweetgrass. Tightly wrap the end with a moistened raffia strand for 3cm. Bend the wrapped portion into a tight teardrop loop and secure with the weaving awl (Empiso), executing three interlocking locking stitches.', 'Keep fingers behind awl travel line.', 'Moisten raffia slightly with a damp sponge to increase tensile elongation.', '/assets/images/basket-step-3.svg', null],
     [4, 1, 4, 'Radial Stitching and Geometric Motif Interlocking', 'Continue coiling the sweetgrass bundle outward counter-clockwise. Insert the awl through the previous row, create an opening, and thread the raffia through in a figure-eight stitch. Alternate golden and crimson raffia strands every 8 stitches to generate the outward star motif.', 'Watch for repetitive thumb strain; take 5-minute pauses.', 'Maintain equal tension on each pull for flat planar growth.', '/assets/images/basket-step-4.svg', null],
     [5, 1, 5, 'Elevating the Basket Walls and Tapering Coils', 'Once the basket base reaches 20cm diameter, position the new core coil at a 45-degree angle above the plane rather than flat. This begins the vertical elevation of the bowl walls. Maintain tight stitching to prevent light passing through the coils.', 'Ensure base rests on flat surface during wall transition.', 'Use a wooden template ring to confirm uniform circular flare.', '/assets/images/basket-step-5.svg', null],
-    [6, 1, 6, 'Braided Rim Reinforcement (Omugugunjo)', 'When the basket height reaches 12cm, gradually taper off the sweetgrass core by trimming strands sequentially over 5cm. Execute a double-wrapped herringbone braided edge (Omugugunjo) along the final rim. Conceal the final raffia tail inside the lower coil.', 'Cut tail flush with sharp shears.', 'Lightly steam the finished basket over boiling water to lock fibers in place.', '/assets/images/basket-step-6.svg', null],
-    [7, 2, 1, 'Splitting Palm Fronds into Precision Ribbons', 'Strip date palm fronds (Enkindu) from branches. Using a bone needle or splitting tool, divide each green frond lengthwise into 2.5mm uniform strips. Discard the stiff outer rib.', 'Keep fingers clear of needle tip.', 'Uniform width ensures straight mat borders.', '/assets/images/mat-step-1.svg', null],
-    [8, 2, 2, 'Sun-Curing and Natural Dye Steeping', 'Spread split reeds on woven drying racks in full sun for 48 hours until straw-colored. Steep a third of the ribbons in boiled turmeric and eucalyptus bark solution for decorative dark strands.', 'Cover racks if rain threatens.', 'Turn reeds twice daily for even sun cure.', '/assets/images/mat-step-2.svg', null],
-    [9, 2, 3, 'Anchoring the 90-Degree Starting Corner', 'Place 12 natural strands and 12 dyed strands perpendicular to each other on the working mat. Interlace the corner in a 2x2 basket weave, clamping the corner point with smooth wooden stones.', 'Work on clean swept floor.', 'Double back the first 4 strands to prevent corner unravelling.', '/assets/images/mat-step-3.svg', null],
-    [10, 2, 4, 'Weaving the Diagonal Twill Chevron (Amabaati)', 'Execute the traditional two-over, two-under diagonal twill pass. Shift the pattern by one reed on each row to create crisp diagonal chevron ridges (Amabaati). Introduce colored accent reeds at 15cm intervals.', 'Avoid kneeling directly on woven sections.', 'Push rows tightly against each other with a wooden sword beater.', '/assets/images/mat-step-4.svg', null],
-    [11, 2, 5, 'Double-Folded Border Hemming and Trimming', 'Upon reaching 1.8m length, fold the protruding reed fringes at 45 degrees back into the weave structure. Fold a second time to form a firm 2cm reinforced border and shear ends flush with shears.', 'Ensure all ends are locked securely.', 'Massage the finished mat with a smooth river stone to flatten ridges.', '/assets/images/mat-step-5.svg', null],
-    [12, 3, 1, 'Clay Kneading, Grog Tempering and Wedging', 'Place aged anthill clay on a wooden wedging board. Add 15% by volume of crushed, sieved grog potsherds. Knead and wedge the mass 50 times in a spiral motion to ensure uniform moisture and expel all micro air bubbles.', 'Work in ventilated room; avoid breathing dry clay dust.', 'Cut clay with wire to inspect for air pockets.', '/assets/images/pottery-step-1.svg', null],
-    [13, 3, 2, 'Pinch-Base Formation and Coil Elevation', 'Form a round ball of clay and pinch out a concave base disk 15cm across and 15mm thick. Roll uniform clay coils 25mm thick and join them sequentially to the base, smearing joints diagonally inside and out.', 'Support base with dry calabash plate.', 'Score and moisten joints before joining coils.', '/assets/images/pottery-step-2.svg', null],
-    [14, 3, 3, 'Wall Thinning and Calabash Rib Smoothing', 'Support the inner wall with your left hand while scraping the exterior with a curved calabash rib (Ekisate). Work upward in circular passes to thin walls to 8mm and expand the spherical water pot belly.', 'Do not thin walls beyond 6mm to avoid collapse.', 'Keep a damp rag on hand for cleaning tools.', '/assets/images/pottery-step-3.svg', null],
-    [15, 3, 4, 'Neck Flaring, Pebble Burnishing and Shoulder Incision', 'Form the flared rim using a wet leather strip. When the vessel reaches leather-hard stage (24 hours shade dry), carve traditional chevron markings around the shoulder and burnish exterior with a river pebble.', 'Do not dry in direct sun; causes rapid cracking.', 'Pebble burnishing seals surface pores and creates natural luster.', '/assets/images/pottery-step-4.svg', null],
-    [16, 3, 5, 'Open-Pit Grass Firing and Charcoal Curing', 'Dig a shallow 40cm earth pit. Lay a bed of dry eucalyptus branches, place pots inverted, and cover completely with 1 meter of dry elephant grass. Ignite from the windward side. Burn for 3 hours until glowing cherry red.', 'Stand upwind of smoke; wear heat-resistant gloves.', 'Allow to cool undisturbed for 8 hours before touching.', '/assets/images/pottery-step-5.svg', null]
+    [6, 1, 6, 'Braided Rim Reinforcement (Omugugunjo)', 'When the basket height reaches 12cm, gradually taper off the sweetgrass core by trimming strands sequentially over 5cm. Execute a double-wrapped herringbone braided edge (Omugugunjo) along the final rim. Conceal the final raffia tail inside the lower coil.', 'Cut tail flush with sharp shears.', 'Lightly steam the finished basket over boiling water to lock fibers in place.', '/assets/images/basket-step-6.svg', null]
   ];
 
-  const stepCols = ['id', 'knowledge_id', 'step_number', 'title', 'instruction', 'safety_warning', 'tip', 'image_url', 'video_url'];
   for (const s of steps) {
-    await upsert('knowledge_steps', stepCols, s, ['title', 'instruction', 'image_url']);
+    await upsert('knowledge_steps', ['id', 'knowledge_id', 'step_number', 'title', 'instruction', 'safety_warning', 'tip', 'image_url', 'video_url'], s, ['title', 'instruction']);
   }
 
-  // 9. Tools
+  // 9. Knowledge Tools
   const tools = [
     [1, 1, 'Weaving Awl', 'Empiso y\'okuluka', 'Hand-forged steel needle with horn handle', 0],
     [2, 1, 'Trimming Knife', 'Akambe akawonvu', 'Curved blade for clean fiber severance', 0],
-    [3, 1, 'Soaking Basin', 'Baketi y\'amazzi', '10-litre water container for fiber moistening', 0],
-    [4, 2, 'Splitting Needle', 'Empiso esala enkindu', 'Blunt-edge splitting tool for reed grading', 0],
-    [5, 2, 'Weaving Sword Beater', 'Akabaati k\'embaawo', 'Hardwood beater for pressing rows tight', 0],
-    [6, 2, 'Smoothing Stone', 'Ejjinja eriwawula', 'Smooth river pebble for seam flattening', 0],
-    [7, 3, 'Calabash Shaping Rib', 'Ekisate ky\'ensumbi', 'Curved gourd segment for wall elevation', 0],
-    [8, 3, 'Burnishing Pebble', 'Ejjinja ery\'okusiba', 'Polished quartz pebble for water seal luster', 0],
-    [9, 3, 'Clay Cutting Wire', 'Oluguwa olusala ebbumba', 'Braided steel wire with wooden handles', 0]
+    [3, 1, 'Soaking Basin', 'Baketi y\'amazzi', '10-litre water container for fiber moistening', 0]
   ];
 
   for (const t of tools) {
-    await upsert('knowledge_tools', ['id', 'knowledge_id', 'name', 'local_name', 'specification', 'optional'], t, ['name', 'local_name']);
+    await upsert('knowledge_tools', ['id', 'knowledge_id', 'name', 'local_name', 'specification', 'optional'], t, ['name', 'specification']);
   }
 
-  // 10. Materials
+  // 10. Knowledge Materials
   const materials = [
     [1, 1, 'Banana Pseudostem Sheath', 'Ebyai by\'ebitooke', '15', 'Dried Stalks', 'Local banana plantations in Wakiso & Masaka', 0],
     [2, 1, 'Raffia Palm Fibers', 'Enjulu z\'omulondo', '500', 'Grams', 'Wetland raffia palm harvesting in Mpigi', 0],
-    [3, 1, 'Natural Marigold & Hibiscus Dye', 'Langi ey\'ebimuli', '250', 'Grams', 'Locally grown marigold and hibiscus flowers', 0],
-    [4, 2, 'Dwarf Date Palm Fronds', 'Enkindu ez\'omu kitoogo', '80', 'Fronds', 'Harvested from Jinja wetland ridges', 0],
-    [5, 2, 'Turmeric Plant Dye', 'Ebinzaali eby\'ekitaka', '100', 'Grams', 'Fresh ground turmeric roots from local farm', 0],
-    [6, 3, 'Anthill Clay', 'Ebbumba ery\'ekisasi', '25', 'Kilograms', 'Natural termite mound clay in Mukono', 0],
-    [7, 3, 'Crushed Grog Potsherds', 'Empompoma', '4', 'Kilograms', 'Finely ground terracotta pot remnants', 0],
-    [8, 3, 'Elephant Grass Firing Fuel', 'Ebisagazi eby\'okwokya', '3', 'Bundles', 'Dry highland elephant grass', 0]
+    [3, 1, 'Natural Marigold & Hibiscus Dye', 'Langi ey\'ebimuli', '250', 'Grams', 'Locally grown marigold and hibiscus flowers', 0]
   ];
 
   for (const m of materials) {
     await upsert('knowledge_materials', ['id', 'knowledge_id', 'name', 'local_name', 'quantity', 'unit', 'source_location', 'optional'], m, ['name', 'quantity']);
   }
 
-  // 11. Media
-  const media = [
-    [1, 1, 'image', '/assets/images/basket-coiling-cover.svg', 'basket-coiling-cover.svg', 12400, 'image/svg+xml', 'Finished Handwoven Coiled Basket (Ekibbo)', 1],
-    [2, 1, 'video', '/uploads/media/demo-video-basket.mp4', 'demo-video-basket.mp4', 8500000, 'video/mp4', 'Demonstration: Starting Coiled Center & Radial Interlocking Stitches', 0],
-    [3, 2, 'image', '/assets/images/palm-mat-cover.svg', 'palm-mat-cover.svg', 14200, 'image/svg+xml', 'Busoga Traditional Herringbone Palm Mat (Omwekeeka)', 1],
-    [4, 3, 'image', '/assets/images/clay-pot-cover.svg', 'clay-pot-cover.svg', 13800, 'image/svg+xml', 'Hand-Coiled Earthen Water Vessel (Ensumbi)', 1],
-    [5, 4, 'image', '/assets/images/bark-cloth-cover.svg', 'bark-cloth-cover.svg', 15100, 'image/svg+xml', 'Royal UNESCO Bark Cloth (Olubugo)', 1]
-  ];
+  // 11. Reviews
+  await upsert('reviews', [
+    'id', 'knowledge_id', 'reviewer_id', 'decision', 'completeness_score',
+    'clarity_score', 'safety_score', 'comments', 'internal_notes'
+  ], [
+    1, 1, 9, 'approved', 5, 5, 5,
+    'Exemplary procedural documentation. Step sequencing conforms to traditional Buganda weaving standards, awl safety protocols are rigorous, and local material names are accurately attributed.',
+    'Approved for public library and learner certifications.'
+  ], ['decision', 'comments']);
 
-  for (const md of media) {
-    await upsert('knowledge_media', ['id', 'knowledge_id', 'media_type', 'file_path', 'original_filename', 'file_size', 'mime_type', 'caption', 'is_primary'], md, ['file_path', 'caption']);
-  }
+  // 12. Assessments
+  await upsert('assessments', [
+    'id', 'knowledge_id', 'title', 'description', 'passing_score', 'max_attempts', 'time_limit_minutes', 'is_active', 'created_by'
+  ], [
+    1, 1, 'Basket Making Practical Competency Assessment',
+    'Evaluates knowledge of fiber preparation, natural dyeing, spiral knot formation, and awl safety.',
+    75, 3, 20, 1, 2
+  ], ['title', 'passing_score']);
 
-  // 12. References
-  const refs = [
-    [1, 1, 'Traditional Basketry and Fibre Crafts of East Africa', 'Trowell, Margaret & Wachsmann, K.P.', 'https://unesco.org/culture/heritage', '1953 (Historical Ethnography)'],
-    [2, 4, 'Proclamation of Masterpieces of Oral and Intangible Heritage of Humanity: Barkcloth Making in Uganda', 'UNESCO Intangible Heritage Committee', 'https://ich.unesco.org/en/RL/barkcloth-making-in-uganda-00139', '2005 (UNESCO Convention)']
-  ];
-
-  for (const r of refs) {
-    await upsert('knowledge_references', ['id', 'knowledge_id', 'title', 'author_or_source', 'reference_url', 'year_or_context'], r, ['title', 'author_or_source']);
-  }
-
-  // 13. Reviews & Review History
-  await upsert('reviews', ['id', 'knowledge_id', 'reviewer_id', 'decision', 'completeness_score', 'clarity_score', 'safety_score', 'comments', 'reviewed_at'],
-    [1, 1, 9, 'approved', 5, 5, 5, 'Outstanding traditional documentation. Cultural context, material preservation, and safety protocols for awl usage meet highest standards.', '2026-01-12 14:00:00'],
-    ['decision', 'comments']);
-
-  await upsert('review_history', ['id', 'knowledge_id', 'reviewer_id', 'previous_status', 'new_status', 'action', 'feedback_notes'],
-    [1, 1, 9, 'submitted', 'approved', 'REVIEW_APPROVED', 'Approved for public library preservation with formal cultural attribution.'],
-    ['action', 'feedback_notes']);
-
-  // 14. Assessments & Questions
-  await upsert('assessments', ['id', 'knowledge_id', 'title', 'description', 'passing_score', 'max_attempts', 'time_limit_minutes', 'is_active', 'created_by'],
-    [1, 1, 'Basket Making Practical Competency Assessment', 'Evaluates knowledge of fiber preparation, natural dyeing, spiral knot formation, and awl safety.', 75, 3, 20, 1, 2],
-    ['title', 'passing_score']);
-
+  // 13. Assessment Questions
   const questions = [
-    [1, 1, 'Why is wood ash added to boiling plant dyes during the raffia preparation stage?', 'multiple_choice', JSON.stringify(['It serves as a mineral mordant to chemically fix the natural plant dye to cellulose fibers', 'It speeds up drying time in the sun', 'It bleaches the natural brown banana fibers to white', 'It acts as an insecticide to kill termites']), 'It serves as a mineral mordant to chemically fix the natural plant dye to cellulose fibers', 'Wood ash contains potassium carbonate which fixes vegetable tannins.', 10, 1],
-    [2, 1, 'What is the function of the central knot (Omutwe gw\'ekibbo) in coiled basketry?', 'multiple_choice', JSON.stringify(['It forms the structural foundation and anchoring tension core for all subsequent coils', 'It acts as a drainage valve for grain', 'It is strictly decorative and can be added after the basket is completed', 'It holds the carrying strap in place']), 'It forms the structural foundation and anchoring tension core for all subsequent coils', 'Without a tight center knot, the radial spiral unravels under load.', 10, 2],
-    [3, 1, 'What critical safety precaution must always be observed when using the weaving awl (Empiso)?', 'multiple_choice', JSON.stringify(['Push the awl tip away from holding fingers and maintain good lighting', 'Heat the awl tip over a flame before every stitch', 'Use the awl only on damp clay', 'Wear heavy welding gloves']), 'Push the awl tip away from holding fingers and maintain good lighting', 'Puncture injuries occur when pressing towards fingers.', 10, 3]
+    [1, 1, 'Why is wood ash added to boiling plant dyes during the raffia preparation stage?', 'multiple_choice', '["It serves as a mineral mordant to chemically fix the natural plant dye to cellulose fibers", "It speeds up drying time in the sun", "It bleaches the natural brown banana fibers to white", "It acts as an insecticide to kill termites"]', 'It serves as a mineral mordant to chemically fix the natural plant dye to cellulose fibers', 'Wood ash contains potassium carbonate which fixes vegetable tannins.', 10, 1],
+    [2, 1, 'What is the function of the central knot (Omutwe gw\'ekibbo) in coiled basketry?', 'multiple_choice', '["It forms the structural foundation and anchoring tension core for all subsequent coils", "It acts as a drainage valve for grain", "It is strictly decorative and can be added after the basket is completed", "It holds the carrying strap in place"]', 'It forms the structural foundation and anchoring tension core for all subsequent coils', 'Without a tight center knot, the radial spiral unravels under load.', 10, 2],
+    [3, 1, 'What critical safety precaution must always be observed when using the weaving awl (Empiso)?', 'multiple_choice', '["Push the awl tip away from holding fingers and maintain good lighting", "Heat the awl tip over a flame before every stitch", "Use the awl only on damp clay", "Wear heavy welding gloves"]', 'Push the awl tip away from holding fingers and maintain good lighting', 'Puncture injuries occur when pressing towards fingers.', 10, 3]
   ];
 
   for (const q of questions) {
-    await upsert('assessment_questions', ['id', 'assessment_id', 'question_text', 'question_type', 'options_json', 'correct_answer', 'explanation', 'points', 'display_order'], q, ['question_text', 'correct_answer']);
+    await upsert('assessment_questions', ['id', 'assessment_id', 'question_text', 'question_type', 'options_json', 'correct_answer', 'explanation', 'points', 'display_order'], q, ['question_text']);
   }
 
-  // 15. Learner Enrollment & Progress (Denis Kato completed Basket Making)
-  await upsert('learning_progress', ['id', 'learner_id', 'knowledge_id', 'status', 'current_step', 'completed_steps_count', 'total_steps_count', 'completion_percentage', 'enrolled_at', 'completed_at'],
-    [1, 11, 1, 'completed', 6, 6, 6, 100.00, '2026-02-01 08:30:00', '2026-02-03 16:45:00'],
-    ['status', 'completion_percentage']);
+  // 14. Learning Progress
+  await upsert('learning_progress', [
+    'id', 'learner_id', 'knowledge_id', 'status', 'current_step',
+    'completed_steps_count', 'total_steps_count', 'completion_percentage', 'enrolled_at', 'completed_at'
+  ], [
+    1, 11, 1, 'completed', 6, 6, 6, 100.00, '2026-02-01 08:30:00', '2026-02-03 16:45:00'
+  ], ['status', 'completion_percentage']);
 
   for (let s = 1; s <= 6; s++) {
     await upsert('learning_step_completions', ['id', 'progress_id', 'step_id', 'completed_at'], [s, 1, s, '2026-02-02 12:00:00'], ['completed_at']);
   }
 
-  await upsert('assessment_results', ['id', 'assessment_id', 'learner_id', 'score', 'total_points', 'percentage', 'passed', 'attempt_number', 'completed_at'],
-    [1, 1, 11, 30, 30, 100.00, 1, 1, '2026-02-03 17:00:00'],
-    ['score', 'percentage']);
+  // Assessment result
+  await upsert('assessment_results', [
+    'id', 'assessment_id', 'learner_id', 'score', 'total_points', 'percentage', 'passed', 'attempt_number', 'completed_at'
+  ], [
+    1, 1, 11, 30, 30, 100.00, 1, 1, '2026-02-03 17:00:00'
+  ], ['score', 'percentage']);
 
-  await upsert('practical_submissions', ['id', 'knowledge_id', 'learner_id', 'submission_title', 'submission_text', 'file_url', 'original_filename', 'file_size', 'mime_type', 'status', 'grade_score', 'assessor_feedback', 'assessor_id', 'submitted_at', 'evaluated_at'],
-    [1, 1, 11, 'Completed Coiled Sweetgrass and Raffia Basket (18cm diameter)', 'I harvested banana fibers from our home garden in Wakiso, extracted and dyed raffia with marigolds, and completed a 6-coil flared basket with braided rim. I observed all awl safety guidelines.', '/assets/images/category-basket.svg', 'denis-basket-practical.svg', 14500, 'image/svg+xml', 'passed', 95.00, 'Superb craftsmanship. The coil tension is remarkably consistent, the marigold gold hues are vibrant, and the braided rim is tightly locked. Passed with distinction!', 2, '2026-02-03 17:15:00', '2026-02-04 10:30:00'],
-    ['status', 'grade_score']);
+  // Practical submission & evidence
+  await upsert('practical_submissions', [
+    'id', 'knowledge_id', 'learner_id', 'submission_title', 'submission_text', 'file_url',
+    'original_filename', 'file_size', 'mime_type', 'status', 'grade_score', 'assessor_feedback',
+    'assessor_id', 'submitted_at', 'evaluated_at'
+  ], [
+    1, 1, 11, 'Completed Coiled Sweetgrass and Raffia Basket (18cm diameter)',
+    'I harvested banana fibers from our home garden in Wakiso, extracted and dyed raffia with marigolds, and completed a 6-coil flared basket with braided rim. I observed all awl safety guidelines.',
+    '/assets/images/category-basket.svg', 'denis-basket-practical.svg', 14500, 'image/svg+xml', 'passed', 95.00,
+    'Superb craftsmanship. The coil tension is remarkably consistent, the marigold gold hues are vibrant, and the braided rim is tightly locked. Passed with distinction!',
+    2, '2026-02-03 17:15:00', '2026-02-04 10:30:00'
+  ], ['status', 'grade_score']);
 
-  await upsert('submission_evidence', ['id', 'submission_id', 'file_url', 'original_filename', 'evidence_type', 'step_number', 'caption'],
-    [1, 1, '/assets/images/basket-step-3.svg', 'center-knot-evidence.svg', 'photo', 3, 'My central coiled spiral knot after completion'],
-    ['file_url', 'caption']);
+  await upsert('submission_evidence', ['id', 'submission_id', 'file_url', 'original_filename', 'evidence_type', 'step_number', 'caption'], [
+    1, 1, '/assets/images/basket-step-3.svg', 'center-knot-evidence.svg', 'photo', 3, 'My central coiled spiral knot after completion'
+  ], ['caption']);
 
-  await upsert('submission_evidence', ['id', 'submission_id', 'file_url', 'original_filename', 'evidence_type', 'step_number', 'caption'],
-    [2, 1, '/assets/images/basket-coiling-cover.svg', 'finished-basket-evidence.svg', 'photo', 6, 'Finished coiled basket displaying geometric star motifs'],
-    ['file_url', 'caption']);
+  await upsert('submission_evidence', ['id', 'submission_id', 'file_url', 'original_filename', 'evidence_type', 'step_number', 'caption'], [
+    2, 1, '/assets/images/basket-coiling-cover.svg', 'finished-basket-evidence.svg', 'photo', 6, 'Finished coiled basket displaying geometric star motifs'
+  ], ['caption']);
 
-  await upsert('certificates', ['id', 'certificate_code', 'learner_id', 'knowledge_id', 'assessment_result_id', 'issue_date', 'title', 'learner_name', 'issuer_name', 'status', 'verification_url'],
-    [1, 'LT-UG-2026-BSK-001', 11, 1, 1, '2026-02-04', 'Handwoven Coil Basketry Mastery Certificate', 'Denis Kato', 'LifeTrace Traditional Knowledge Verification Council', 'valid', '/certificate.html?code=LT-UG-2026-BSK-001'],
-    ['certificate_code', 'status']);
+  // Official Certificate
+  await upsert('certificates', [
+    'id', 'certificate_code', 'learner_id', 'knowledge_id', 'assessment_result_id',
+    'issue_date', 'title', 'learner_name', 'issuer_name', 'status', 'verification_url'
+  ], [
+    1, 'LT-UG-2026-BSK-001', 11, 1, 1, '2026-02-04',
+    'Handwoven Coil Basketry Mastery Certificate', 'Denis Kato',
+    'LifeTrace Knowledge Verification Council', 'valid', '/certificate.html?code=LT-UG-2026-BSK-001'
+  ], ['status', 'title']);
 
-  // 16. In-App Notifications
+  // 15. Notifications
   const notifications = [
     [1, 11, 'Certificate Awarded!', 'Congratulations Denis! You have earned your verified certificate for Handwoven Coil Basketry.', 'success', '/certificate.html?code=LT-UG-2026-BSK-001', 0],
     [2, 9, 'New Review Assignment', 'A new traditional craft submission "Carved Three-Legged Hardwood Stool" is waiting in your queue.', 'action_required', '/review-management.html', 0],
@@ -459,7 +404,7 @@ async function runSeed() {
     await upsert('notifications', ['id', 'user_id', 'title', 'message', 'type', 'link', 'is_read'], n, ['title', 'message']);
   }
 
-  // 17. System Settings
+  // 16. System Settings
   const settings = [
     ['platform_name', 'LifeTrace – Traditional Craftsmanship Preservation & LMS', 'Platform branding title'],
     ['country_focus', 'Uganda', 'Primary national and regional focus'],
@@ -473,12 +418,18 @@ async function runSeed() {
     await upsert('system_settings', ['setting_key', 'setting_value', 'description'], s, ['setting_value']);
   }
 
-  // 18. Audit Logs
-  await upsert('audit_logs', ['id', 'user_id', 'username', 'role', 'action', 'module', 'record_id', 'details_json'],
+  // 17. Audit Logs
+  const auditLogs = [
     [1, 1, 'admin', 'admin', 'SYSTEM_INITIALIZED', 'PLATFORM', '1', '{"status":"operational","domain":"Ugandan Traditional Crafts"}'],
-    ['action']);
+    [2, 2, 'joyce_nakato', 'expert', 'KNOWLEDGE_PUBLISHED', 'KNOWLEDGE', '1', '{"title":"Handwoven Coil Basket","status":"published"}'],
+    [3, 11, 'denis_kato', 'learner', 'CERTIFICATE_GENERATED', 'CERTIFICATE', 'LT-UG-2026-BSK-001', '{"score":100,"grade":"Distinction"}']
+  ];
 
-  console.log('[Seed] Database seeding completed successfully.');
+  for (const a of auditLogs) {
+    await upsert('audit_logs', ['id', 'user_id', 'username', 'role', 'action', 'module', 'record_id', 'details_json'], a, ['action']);
+  }
+
+  console.log('=== Database Seeding Complete: 10 Traditional Categories, 7 Master Crafts, and Full Verification Pipeline Populated! ===');
   return true;
 }
 
@@ -486,7 +437,7 @@ if (require.main === module) {
   runSeed()
     .then(() => process.exit(0))
     .catch((err) => {
-      console.error('[Seed Error] Seeding failed:', err.message);
+      console.error('Seeding failed:', err);
       process.exit(1);
     });
 }
