@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practical Evidence & Evaluation – LifeTrace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--teal-600);">
+    <div class="container">
+      <span class="badge" style="background:var(--gold-500);color:var(--navy-950);margin-bottom:8px;">Hands-On Verification</span>
+      <h1 style="font-size:2rem;font-weight:800;color:var(--white);">Practical Assignment Evidence & Evaluation</h1>
+      <p style="color:var(--slate-300);font-size:1rem;margin-top:6px;">
+        Submit photographic work evidence or conduct expert grading of hands-on technical competencies.
+      </p>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- LEARNER VIEW: Submit Evidence -->
+    <div id="learner-submit-view" style="display:none;margin-bottom:40px;">
+      <div class="card" style="padding:32px;max-width:800px;margin:0 auto;">
+        <h2 style="font-size:1.4rem;font-weight:800;color:var(--navy-900);margin-bottom:14px;border-bottom:1px solid #f1f5f9;padding-bottom:10px;">
+          <i class="fas fa-camera" style="color:var(--teal-600);margin-right:8px;"></i> Submit Hands-On Evidence
+        </h2>
+
+        <form id="evidence-form">
+          <div class="form-group">
+            <label class="form-label" for="sub-knowledge">Practical Module <span class="req">*</span></label>
+            <select id="sub-knowledge" class="form-control" required>
+              <option value="">Select enrolled module...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="sub-title">Craft Submission Title <span class="req">*</span></label>
+            <input type="text" id="sub-title" class="form-control" placeholder="e.g. Completed Coiled Sweetgrass and Raffia Basket (18cm diameter)" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="sub-text">Craft Description & Practical Observations <span class="req">*</span></label>
+            <textarea id="sub-text" class="form-control" style="min-height:120px;" placeholder="Describe how you harvested and prepared raw materials, executed procedural steps, verified measurements, observed safety precautions, and overcame difficulties..." required minlength="20"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="sub-file">Attach Photographic Craft Evidence / Finished Product Photos <span class="req">*</span></label>
+            <input type="file" id="sub-file" class="form-control" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf">
+            <div class="form-hint">Upload photographs showing your completed handmade craft, making stages, or woven edges (Max 25MB).</div>
+          </div>
+
+          <button type="submit" id="btn-submit-evidence" class="btn btn-teal btn-lg">
+            <i class="fas fa-paper-plane"></i> Submit Practical Work for Assessor Review
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ASSESSOR / EXPERT VIEW: Submissions to Grade -->
+    <div id="assessor-eval-view" style="display:none;margin-bottom:40px;">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-user-check" style="color:var(--gold-600);margin-right:8px;"></i> Practical Submissions Awaiting Evaluation</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Learner</th>
+                <th>Module & Assignment</th>
+                <th>Submitted On</th>
+                <th>Status</th>
+                <th>Grade</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="assessor-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i> Loading practical submissions...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Grading Modal / Panel -->
+      <div id="grading-modal" class="card" style="display:none;margin-top:30px;padding:30px;border:2px solid var(--teal-600);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #e2e8f0;padding-bottom:12px;">
+          <h3 style="font-size:1.2rem;font-weight:800;color:var(--navy-900);">Evaluate Learner Submission</h3>
+          <button class="btn btn-outline btn-sm" onclick="closeGradingModal()">&times; Close</button>
+        </div>
+
+        <div id="grading-details-content" style="margin-bottom:20px;background:var(--slate-50);padding:18px;border-radius:var(--radius-md);"></div>
+
+        <form id="grading-form">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="form-group">
+              <label class="form-label" for="grade-status">Evaluation Decision <span class="req">*</span></label>
+              <select id="grade-status" class="form-control" required>
+                <option value="passed">Passed (Satisfies Competency)</option>
+                <option value="needs_revision">Needs Revision (Resubmit with Corrections)</option>
+                <option value="failed">Failed (Did Not Meet Safety/Competency Threshold)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="grade-score">Grade Score (0 - 100%) <span class="req">*</span></label>
+              <input type="number" id="grade-score" class="form-control" min="0" max="100" value="85" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="grade-feedback">Assessor Qualitative Feedback <span class="req">*</span></label>
+            <textarea id="grade-feedback" class="form-control" style="min-height:90px;" placeholder="Comment on technique, safety adherence, and suggestions..." required></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:12px;">
+            <button type="button" class="btn btn-outline" onclick="closeGradingModal()">Cancel</button>
+            <button type="submit" id="btn-save-grade" class="btn btn-teal">
+              <i class="fas fa-check-circle"></i> Save Grade & Notify Learner
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let activeUser = null;
+    let selectedSubmissionId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const auth = await api.get('/auth/me');
+        if (!auth.authenticated) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        activeUser = auth.user;
+
+        if (activeUser.role === 'learner') {
+          document.getElementById('learner-submit-view').style.display = 'block';
+          await loadLearnerModules();
+        } else {
+          document.getElementById('assessor-eval-view').style.display = 'block';
+          await loadAssessorSubmissions();
+        }
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    });
+
+    async function loadLearnerModules() {
+      const select = document.getElementById('sub-knowledge');
+      const coursesRes = await api.get('/learning/my/courses');
+      const courses = coursesRes.courses || [];
+
+      if (courses.length === 0) {
+        select.innerHTML = '<option value="">No enrolled modules found. Please enrol from the library first.</option>';
+        return;
+      }
+
+      courses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.knowledge_id;
+        opt.textContent = `${c.title} (${c.completion_percentage}% completed)`;
+        select.appendChild(opt);
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const kId = urlParams.get('knowledge_id');
+      if (kId) select.value = kId;
+    }
+
+    async function loadAssessorSubmissions() {
+      const tbody = document.getElementById('assessor-tbody');
+      try {
+        const res = await api.get('/learning/submissions/all');
+        const subs = res.submissions || [];
+
+        if (subs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#64748b;">No practical submissions to evaluate.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = subs.map(s => `
+          <tr>
+            <td>
+              <div style="font-weight:700;color:var(--navy-900);">${s.learner_name}</div>
+              <div style="font-size:0.75rem;color:var(--slate-500);">${s.learner_email}</div>
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:0.9rem;">${s.submission_title}</div>
+              <div style="font-size:0.75rem;color:var(--teal-700);">${s.knowledge_title}</div>
+            </td>
+            <td>${new Date(s.submitted_at).toLocaleDateString('en-GB')}</td>
+            <td><span class="badge badge-${s.status}">${s.status.replace('_', ' ')}</span></td>
+            <td>${s.grade_score !== null ? `<strong>${s.grade_score}%</strong>` : '<span style="color:#94a3b8;">Pending</span>'}</td>
+            <td>
+              <button class="btn btn-teal btn-sm" onclick="openGrading(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+                <i class="fas fa-edit"></i> Evaluate
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--rose-600);text-align:center;padding:20px;">${err.message}</td></tr>`;
+      }
+    }
+
+    function openGrading(sub) {
+      selectedSubmissionId = sub.id;
+      const modal = document.getElementById('grading-modal');
+      modal.style.display = 'block';
+      modal.scrollIntoView({ behavior: 'smooth' });
+
+      document.getElementById('grading-details-content').innerHTML = `
+        <div style="font-weight:700;font-size:1.1rem;color:var(--navy-900);margin-bottom:4px;">${sub.submission_title}</div>
+        <div style="font-size:0.85rem;color:var(--slate-500);margin-bottom:12px;">Submitted by ${sub.learner_name} for "${sub.knowledge_title}"</div>
+        <div style="font-size:0.92rem;color:var(--slate-700);line-height:1.6;white-space:pre-line;margin-bottom:12px;">${sub.submission_text}</div>
+        ${sub.file_url ? `<a href="${sub.file_url}" target="_blank" class="btn btn-outline btn-sm"><i class="fas fa-paperclip"></i> View Attached Evidence (${sub.original_filename || 'Attachment'})</a>` : ''}
+      `;
+
+      if (sub.grade_score !== null) document.getElementById('grade-score').value = sub.grade_score;
+      if (sub.assessor_feedback) document.getElementById('grade-feedback').value = sub.assessor_feedback;
+      if (sub.status) document.getElementById('grade-status').value = sub.status;
+    }
+
+    function closeGradingModal() {
+      document.getElementById('grading-modal').style.display = 'none';
+      selectedSubmissionId = null;
+    }
+
+    document.getElementById('grading-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!selectedSubmissionId) return;
+
+      const btn = document.getElementById('btn-save-grade');
+      btn.disabled = true;
+
+      const status = document.getElementById('grade-status').value;
+      const grade_score = parseFloat(document.getElementById('grade-score').value);
+      const assessor_feedback = document.getElementById('grade-feedback').value.trim();
+
+      try {
+        const res = await api.post(`/learning/submissions/${selectedSubmissionId}/grade`, {
+          status,
+          grade_score,
+          assessor_feedback
+        });
+
+        api.toast(res.message, 'success');
+        closeGradingModal();
+        await loadAssessorSubmissions();
+      } catch (err) {
+        api.toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('evidence-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-evidence');
+      btn.disabled = true;
+
+      const knowledgeId = document.getElementById('sub-knowledge').value;
+      const submission_title = document.getElementById('sub-title').value.trim();
+      const submission_text = document.getElementById('sub-text').value.trim();
+      const fileInput = document.getElementById('sub-file');
+
+      if (!knowledgeId) {
+        api.toast('Please select an enrolled module.', 'warning');
+        btn.disabled = false;
+        return;
+      }
+
+      let file_url = null;
+      let original_filename = null;
+      let file_size = null;
+      let mime_type = null;
+
+      // Upload file if selected
+      if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('evidence', fileInput.files[0]);
+        try {
+          api.toast('Uploading evidence document/photo...', 'info');
+          const uploadRes = await api.upload('/media/submission', formData);
+          file_url = uploadRes.fileUrl;
+          original_filename = uploadRes.originalName;
+          file_size = uploadRes.size;
+          mime_type = uploadRes.mimeType;
+        } catch (err) {
+          api.toast('File upload failed: ' + err.message, 'error');
+          btn.disabled = false;
+          return;
+        }
+      }
+
+      try {
+        const res = await api.post(`/learning/${knowledgeId}/submit-practical`, {
+          submission_title,
+          submission_text,
+          file_url,
+          original_filename,
+          file_size,
+          mime_type
+        });
+
+        api.toast(res.message, 'success');
+        document.getElementById('evidence-form').reset();
+        setTimeout(() => {
+          window.location.href = `/learning-progress.html?knowledge_id=${knowledgeId}`;
+        }, 1000);
+      } catch (err) {
+        api.toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

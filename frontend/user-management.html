@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Account Management – LifeTrace Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--rose-600);">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+        <div>
+          <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:8px;">Administrative Control</span>
+          <h1 style="font-size:2rem;font-weight:800;color:var(--white);">User Accounts Management</h1>
+          <p style="color:var(--slate-300);font-size:1rem;margin-top:4px;">
+            Activate or deactivate accounts, assign permitted roles, and oversee platform access.
+          </p>
+        </div>
+
+        <a href="/admin.html" class="btn btn-outline-white btn-sm"><i class="fas fa-arrow-left"></i> Admin Console</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Filters & Search Bar -->
+    <div class="card" style="padding:20px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 100px;gap:12px;align-items:center;">
+        <input type="text" id="user-search" class="form-control" placeholder="Search by name, username, or email..." onkeyup="if(event.key==='Enter') loadUsers(1)">
+        
+        <select id="filter-role" class="form-control" onchange="loadUsers(1)">
+          <option value="all">All Roles</option>
+          <option value="expert">Expert</option>
+          <option value="learner">Learner</option>
+          <option value="reviewer">Reviewer</option>
+          <option value="admin">Administrator</option>
+        </select>
+
+        <select id="filter-status" class="form-control" onchange="loadUsers(1)">
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive (Suspended)</option>
+          <option value="pending">Pending</option>
+        </select>
+
+        <button class="btn btn-teal" onclick="loadUsers(1)"><i class="fas fa-search"></i> Search</button>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email & Contact</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Registered On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i> Loading user accounts...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const meRes = await api.get('/auth/me');
+        if (!meRes.authenticated || meRes.user.role !== 'admin') {
+          api.toast('User management is restricted to system administrators.', 'error');
+          setTimeout(() => window.location.href = '/dashboard.html', 1000);
+          return;
+        }
+
+        await loadUsers(1);
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    });
+
+    async function loadUsers(page = 1) {
+      const search = document.getElementById('user-search').value.trim();
+      const role = document.getElementById('filter-role').value;
+      const status = document.getElementById('filter-status').value;
+      const tbody = document.getElementById('users-tbody');
+
+      try {
+        const res = await api.get('/admin/users', { search, role, status, page, limit: 30 });
+        const users = res.users || [];
+
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#64748b;">No matching users found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <img src="${u.avatar_url || '/assets/avatars/admin.png'}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" onerror="this.src='/assets/avatars/admin.png'">
+                <div>
+                  <div style="font-weight:700;color:var(--navy-900);">${u.full_name}</div>
+                  <div style="font-size:0.75rem;color:var(--slate-500);">@${u.username}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-size:0.85rem;color:var(--navy-900);">${u.email}</div>
+              <div style="font-size:0.75rem;color:var(--slate-500);">${u.phone || 'No phone'}</div>
+            </td>
+            <td>
+              <select class="form-control" style="width:130px;padding:4px 8px;font-size:0.8rem;" onchange="changeRole(${u.id}, this.value)">
+                <option value="learner" ${u.role === 'learner' ? 'selected' : ''}>Learner</option>
+                <option value="expert" ${u.role === 'expert' ? 'selected' : ''}>Expert</option>
+                <option value="reviewer" ${u.role === 'reviewer' ? 'selected' : ''}>Reviewer</option>
+                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+              </select>
+            </td>
+            <td>
+              <select class="form-control" style="width:120px;padding:4px 8px;font-size:0.8rem;" onchange="changeStatus(${u.id}, this.value)">
+                <option value="active" ${u.status === 'active' ? 'selected' : ''}>Active</option>
+                <option value="inactive" ${u.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                <option value="pending" ${u.status === 'pending' ? 'selected' : ''}>Pending</option>
+              </select>
+            </td>
+            <td>${new Date(u.created_at).toLocaleDateString('en-GB')}</td>
+            <td>
+              <span class="badge badge-${u.status}">${u.status}</span>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red;padding:20px;text-align:center;">${err.message}</td></tr>`;
+      }
+    }
+
+    async function changeRole(userId, newRole) {
+      try {
+        const res = await api.put(`/admin/users/${userId}/role`, { role: newRole });
+        api.toast(res.message, 'success');
+      } catch (err) {
+        api.toast(err.message, 'error');
+        await loadUsers();
+      }
+    }
+
+    async function changeStatus(userId, newStatus) {
+      try {
+        const res = await api.put(`/admin/users/${userId}/status`, { status: newStatus });
+        api.toast(res.message, 'success');
+      } catch (err) {
+        api.toast(err.message, 'error');
+        await loadUsers();
+      }
+    }
+  </script>
+</body>
+</html>
+

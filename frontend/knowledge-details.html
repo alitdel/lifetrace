@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traditional Craft Details – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Detail Header Banner with Craft Image Hero -->
+  <section style="background:var(--navy-900);color:var(--white);padding:45px 0 35px;border-bottom:3px solid var(--teal-600);">
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+        <span class="badge" id="det-category-badge" style="background:var(--teal-600);color:white;">Category</span>
+        <span class="badge badge-skill" id="det-skill-badge">Skill Level</span>
+        <span class="badge badge-published" id="det-status-badge"><i class="fas fa-book-open"></i> Craft guide</span>
+        <span style="font-size:0.85rem;color:var(--slate-400);"><i class="far fa-clock"></i> <span id="det-time">60</span> mins practical duration</span>
+        <span style="font-size:0.85rem;color:var(--slate-400);"><i class="fas fa-eye"></i> <span id="det-views">0</span> views</span>
+        <span class="badge" id="det-region-badge" style="background:rgba(255,255,255,0.15);color:white;"><i class="fas fa-map-marker-alt" style="color:var(--rose-400);"></i> Uganda</span>
+      </div>
+
+      <h1 style="font-size:2.4rem;font-weight:900;color:var(--white);line-height:1.2;margin-bottom:6px;" id="det-title">
+        Loading traditional craft...
+      </h1>
+
+      <div style="font-size:1.25rem;font-style:italic;color:var(--teal-300);font-weight:700;margin-bottom:14px;" id="det-local-name">
+        -
+      </div>
+
+      <p style="font-size:1.1rem;color:var(--slate-300);max-width:850px;line-height:1.6;" id="det-summary">
+        Loading the craft guide...
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Details Content -->
+  <div class="container" style="padding:45px 20px;">
+    <div class="knowledge-detail-layout">
+      <!-- Left Main Column: Video Demo, Procedures, Safety, Materials -->
+      <div>
+        <!-- Craft image and optional video demonstration -->
+        <div class="card" style="padding:0;overflow:hidden;margin-bottom:30px;border:1px solid var(--slate-200);">
+          <div style="background:var(--navy-950);position:relative;">
+            <div id="video-player-container" style="width:100%;min-height:360px;background:#000;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;color:white;overflow:hidden;">
+              <img id="det-cover-img" src="/assets/images/category-basket.svg" alt="Craft Cover" style="width:100%;max-height:420px;object-fit:cover;opacity:0.9;">
+              <video id="det-video-player" controls preload="metadata" style="display:none;width:100%;max-height:420px;background:#000;"></video>
+              <iframe id="det-video-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:none;width:100%;max-height:420px;aspect-ratio:16/9;border:0;background:#000;"></iframe>
+              
+              <!-- Video Play Overlay Bar -->
+              <div id="det-video-overlay" style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent, rgba(15,23,42,0.95));padding:24px 20px 18px;display:flex;justify-content:space-between;align-items:flex-end;">
+                <div>
+                  <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:6px;" id="det-video-badge"><i class="fas fa-video"></i> Video Demonstration</span>
+                  <div style="font-size:1.15rem;font-weight:800;color:white;" id="det-video-title">Traditional Technique Video Demonstration</div>
+                  <div style="font-size:0.8rem;color:var(--slate-300);" id="det-video-attribution">Attributed to Master Craftsperson</div>
+                </div>
+                <div>
+                  <button type="button" id="det-watch-video" class="btn btn-gold btn-sm" data-action="video">
+                    <i class="fas fa-play"></i> Watch Demonstration
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Video Description Bar -->
+          <div style="padding:16px 22px;background:var(--slate-100);font-size:0.88rem;color:var(--slate-700);display:flex;align-items:center;justify-content:space-between;">
+            <div><i class="fas fa-info-circle text-teal" style="margin-right:6px;"></i> A video is available when provided with this craft guide.</div>
+            <span class="badge badge-published"><i class="fas fa-user"></i> Contributor media</span>
+          </div>
+        </div>
+
+        <!-- Prominent Safety Warning Banner -->
+        <div class="alert-safety" style="padding:22px;border-radius:var(--radius-lg);margin-bottom:30px;">
+          <i class="fas fa-shield-alt" style="font-size:2rem;margin-top:2px;"></i>
+          <div>
+            <div style="font-weight:800;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+              Safety Notes
+            </div>
+            <div id="det-safety" style="line-height:1.6;font-size:0.95rem;white-space:pre-line;">
+              Follow hand protection, ergonomic postures, and tool safety rules.
+            </div>
+          </div>
+        </div>
+
+        <!-- Cultural Significance & Historical Context -->
+        <div class="card" style="padding:28px;margin-bottom:30px;border-left:5px solid var(--gold-500);">
+          <h2 style="font-size:1.3rem;font-weight:800;color:var(--navy-900);margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+            <i class="fas fa-monument" style="color:var(--gold-600);"></i> Cultural Significance & Community History
+          </h2>
+          <div id="det-cultural" style="color:var(--slate-700);line-height:1.75;font-size:0.98rem;white-space:pre-line;">
+            Loading cultural heritage background...
+          </div>
+        </div>
+
+        <!-- Technical Description & Principles -->
+        <div class="card" style="padding:28px;margin-bottom:30px;">
+          <h2 style="font-size:1.3rem;font-weight:700;color:var(--navy-900);margin-bottom:14px;border-bottom:1px solid #f1f5f9;padding-bottom:10px;">
+            <i class="fas fa-file-alt" style="color:var(--teal-600);margin-right:8px;"></i>             About This Craft
+          </h2>
+          <div id="det-description" style="color:var(--slate-700);line-height:1.7;font-size:0.98rem;white-space:pre-line;"></div>
+        </div>
+
+        <!-- Where Materials Can Be Obtained (Sourcing) & Preparation -->
+        <div class="card" style="padding:28px;margin-bottom:30px;background:var(--slate-50);border:1px solid var(--slate-200);">
+          <h2 style="font-size:1.25rem;font-weight:700;color:var(--navy-900);margin-bottom:14px;">
+            <i class="fas fa-map-marked-alt" style="color:var(--teal-600);margin-right:8px;"></i> Natural Material Harvesting & Sourcing
+          </h2>
+          <div id="det-sourcing" style="color:var(--slate-700);line-height:1.65;font-size:0.95rem;margin-bottom:16px;"></div>
+          
+          <div style="padding-top:14px;border-top:1px solid var(--slate-200);">
+            <div style="font-weight:700;font-size:0.95rem;color:var(--navy-900);margin-bottom:6px;">Preparation Before Crafting:</div>
+            <div id="det-prep" style="color:var(--slate-700);line-height:1.6;font-size:0.92rem;"></div>
+          </div>
+        </div>
+
+        <!-- Bill of Tools and Consumable Materials with Local Names -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:30px;">
+          <!-- Tools -->
+          <div class="card" style="padding:22px;">
+            <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy-900);margin-bottom:14px;">
+              <i class="fas fa-tools" style="color:var(--teal-600);margin-right:8px;"></i> Required Tools
+            </h3>
+            <ul id="det-tools-list" style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+              <!-- Injected tools -->
+            </ul>
+          </div>
+
+          <!-- Materials -->
+          <div class="card" style="padding:22px;">
+            <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy-900);margin-bottom:14px;">
+              <i class="fas fa-boxes" style="color:var(--gold-600);margin-right:8px;"></i> Consumable Materials
+            </h3>
+            <ul id="det-materials-list" style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+              <!-- Injected materials -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Step-by-Step Procedure Timeline with Stage Photographs -->
+        <div class="card" style="padding:28px;margin-bottom:30px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid #f1f5f9;padding-bottom:12px;flex-wrap:wrap;gap:10px;">
+            <div>
+              <span class="badge badge-skill" style="margin-bottom:4px;"><i class="fas fa-camera"></i> Photographic Guide</span>
+              <h2 style="font-size:1.3rem;font-weight:700;color:var(--navy-900);margin:0;">
+                Step-by-Step Practical Making Procedure
+              </h2>
+            </div>
+            <div id="step-completion-tracker" style="font-size:0.85rem;color:var(--slate-600);font-weight:600;"></div>
+          </div>
+
+          <div class="step-timeline" id="det-steps-timeline">
+            <!-- Injected procedural steps with images -->
+          </div>
+        </div>
+
+        <!-- Common Mistakes & Solutions -->
+        <div class="card" style="padding:28px;margin-bottom:30px;">
+          <h2 style="font-size:1.3rem;font-weight:700;color:var(--navy-900);margin-bottom:16px;">
+            <i class="fas fa-wrench" style="color:var(--gold-600);margin-right:8px;"></i> Common Mistakes & Helpful Tips
+          </h2>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div style="background:var(--slate-50);padding:18px;border-radius:var(--radius-md);border:1px solid var(--slate-200);">
+              <h4 style="font-weight:700;color:var(--rose-600);margin-bottom:8px;"><i class="fas fa-times-circle"></i> Frequent Pitfalls</h4>
+              <p id="det-mistakes" style="font-size:0.9rem;color:var(--slate-700);line-height:1.6;white-space:pre-line;">-</p>
+            </div>
+
+            <div style="background:var(--slate-50);padding:18px;border-radius:var(--radius-md);border:1px solid var(--slate-200);">
+              <h4 style="font-weight:700;color:var(--teal-700);margin-bottom:8px;"><i class="fas fa-check-circle"></i> Helpful Tips</h4>
+              <p id="det-solutions" style="font-size:0.9rem;color:var(--slate-700);line-height:1.6;white-space:pre-line;">-</p>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f1f5f9;">
+            <div style="font-weight:700;font-size:0.95rem;color:var(--navy-900);margin-bottom:4px;">Expected Finished Product Quality:</div>
+            <p id="det-expected" style="font-size:0.92rem;color:var(--slate-700);line-height:1.6;"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Enrollment, Master Expert Card, Evidence Submission -->
+      <div>
+        <!-- Learning Enrollment Card -->
+        <div class="card" style="padding:24px;margin-bottom:24px;border-top:4px solid var(--teal-600);" id="enrollment-card">
+          <h3 style="font-size:1.15rem;font-weight:700;color:var(--navy-900);margin-bottom:12px;">Apprentice Learning Hub</h3>
+          <div id="enrollment-status-area">
+            <p style="font-size:0.9rem;color:var(--slate-600);margin-bottom:16px;">
+              Enrol in this craft module to track procedural steps, upload photographs of your finished work, and earn a verified mastery certificate.
+            </p>
+            <button type="button" class="btn btn-teal btn-lg" style="width:100%;" data-action="enroll">
+              <i class="fas fa-user-plus"></i> Enrol in Practical Craft
+            </button>
+          </div>
+        </div>
+
+        <!-- Contributor Attribution Card -->
+        <div class="card" style="padding:24px;margin-bottom:24px;">
+          <h4 style="font-size:0.8rem;text-transform:uppercase;color:var(--slate-500);font-weight:700;margin-bottom:12px;letter-spacing:0.5px;">Artisan Attribution</h4>
+          <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;">
+            <img id="expert-avatar" src="/assets/avatars/joyce-nakato.svg" alt="Expert" style="width:54px;height:54px;border-radius:50%;object-fit:cover;border:2px solid var(--teal-600);" onerror="this.src='/assets/avatars/admin.svg'">
+            <div>
+              <div id="expert-name" style="font-weight:700;font-size:1.05rem;color:var(--navy-900);">-</div>
+              <div id="expert-org" style="font-size:0.8rem;color:var(--slate-500);">-</div>
+            </div>
+          </div>
+          <p id="expert-bio" style="font-size:0.85rem;color:var(--slate-600);line-height:1.5;margin-bottom:14px;">-</p>
+          <div style="font-size:0.8rem;color:var(--slate-500);padding-top:10px;border-top:1px solid #f1f5f9;">
+            <i class="fas fa-map-marker-alt" style="color:var(--rose-600);margin-right:4px;"></i> <span id="expert-loc">Uganda</span>
+          </div>
+          <div id="expert-consent-box" style="display:none;margin-top:12px;font-size:0.75rem;color:var(--teal-700);background:var(--teal-50);padding:8px 12px;border-radius:var(--radius-sm);line-height:1.4;"></div>
+        </div>
+
+        <!-- Peer Verification Stamp -->
+        <div class="card" id="reviewer-card" style="display:none;padding:22px;background:var(--teal-50);border-color:var(--teal-100);margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:10px;color:var(--teal-700);font-weight:700;font-size:0.95rem;margin-bottom:8px;">
+            <i class="fas fa-user-check" style="font-size:1.2rem;"></i> Review
+          </div>
+          <div style="font-size:0.85rem;color:var(--slate-700);line-height:1.5;">
+            Reviewed by: <strong id="det-reviewer-name"></strong>
+          </div>
+        </div>
+
+        <!-- Assessment Shortcut Card -->
+        <div class="card" style="padding:24px;margin-bottom:24px;" id="assessment-widget-card">
+          <h4 style="font-size:1rem;font-weight:700;color:var(--navy-900);margin-bottom:10px;"><i class="fas fa-graduation-cap" style="color:var(--indigo-600);margin-right:6px;"></i> Theory Assessment</h4>
+          <p style="font-size:0.85rem;color:var(--slate-600);margin-bottom:16px;">
+            Test your knowledge of natural material science, tool safety, and traditional terminology.
+          </p>
+          <a href="#" id="assessment-link-btn" class="btn btn-outline btn-sm" style="width:100%;">Take Assessment</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let knowledgeId = null;
+    let recordData = null;
+    let isAuthenticated = false;
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+
+      if (button.dataset.action === 'video') toggleVideoPlayback();
+      if (button.dataset.action === 'enroll') handleEnroll();
+      if (button.dataset.action === 'complete-step') markStepDone(Number(button.dataset.stepId));
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      knowledgeId = urlParams.get('id');
+
+      if (!knowledgeId) {
+        api.toast('No practical craft specified.', 'error');
+        setTimeout(() => window.location.href = '/knowledge-library.html', 1000);
+        return;
+      }
+
+      const session = await api.get('/auth/me');
+      isAuthenticated = session.authenticated;
+      await loadRecordDetails();
+    });
+
+    async function loadRecordDetails() {
+      try {
+        const res = await api.get(`/knowledge/details/${knowledgeId}`);
+        if (!res.record) {
+          api.toast('Record not found.', 'error');
+          return;
+        }
+
+        recordData = res.record;
+        document.title = `${recordData.title} – LifeTrace Uganda`;
+
+        // Populate Headers
+        document.getElementById('det-title').textContent = recordData.title;
+        document.getElementById('det-local-name').textContent = recordData.local_name || 'Traditional Craft Technique';
+        document.getElementById('det-summary').textContent = recordData.short_summary;
+        document.getElementById('det-category-badge').textContent = recordData.category_name;
+        document.getElementById('det-skill-badge').textContent = (recordData.skill_level || 'beginner').toUpperCase();
+        document.getElementById('det-time').textContent = recordData.estimated_time_minutes;
+        document.getElementById('det-views').textContent = recordData.view_count || 1;
+        document.getElementById('det-safety').textContent = recordData.safety_precautions;
+        document.getElementById('det-description').textContent = recordData.detailed_description;
+        document.getElementById('det-cultural').textContent = recordData.cultural_background || 'Cultural background was not provided for this guide.';
+        document.getElementById('det-sourcing').textContent = recordData.material_sourcing || 'Material sourcing information was not provided for this guide.';
+        document.getElementById('det-prep').textContent = recordData.preparation_instructions || 'Preparation instructions were not provided for this guide.';
+        document.getElementById('det-mistakes').textContent = recordData.common_mistakes || 'No common mistakes were provided for this guide.';
+        document.getElementById('det-solutions').textContent = recordData.mistake_solutions || recordData.troubleshooting || 'No additional tips were provided for this guide.';
+        document.getElementById('det-expected').textContent = recordData.expected_results;
+
+        if (recordData.community_region) {
+          document.getElementById('det-region-badge').innerHTML = `<i class="fas fa-map-marker-alt" style="color:var(--rose-400);"></i> ${recordData.community_region}`;
+        }
+
+        const coverImage = document.getElementById('det-cover-img');
+        coverImage.src = recordData.cover_image_url || categoryImageFor({ slug: recordData.category_slug });
+        coverImage.alt = `${recordData.title} craft illustration`;
+
+        const videoMedia = (recordData.media || []).find((media) => media.media_type === 'video');
+        const videoUrl = recordData.demo_video_url || (videoMedia && videoMedia.file_path);
+        const demoInfo = getDemoVideoInfo(videoUrl);
+        document.getElementById('det-video-title').textContent = videoUrl
+          ? `Video Demonstration: ${recordData.title}`
+          : 'No video demonstration provided';
+
+        if (demoInfo) {
+          document.getElementById('det-video-badge').innerHTML = '<i class="fas fa-video"></i> Video';
+          document.getElementById('det-video-attribution').textContent = `Source: ${demoInfo.source} • ${demoInfo.sourceType}`;
+        } else {
+          document.getElementById('det-video-badge').innerHTML = '<i class="fas fa-video"></i> Video Demonstration';
+          document.getElementById('det-video-attribution').textContent = recordData.expert_name
+            ? `Contributor: ${recordData.expert_name}`
+            : 'Contributor attribution not provided';
+        }
+
+        const video = document.getElementById('det-video-player');
+        const iframe = document.getElementById('det-video-iframe');
+        const watchButton = document.getElementById('det-watch-video');
+        if (videoUrl) {
+          const normalizedUrl = normalizeVideoUrl(videoUrl);
+          if (normalizedUrl.includes('youtube.com/embed/') || normalizedUrl.includes('youtu.be/')) {
+            iframe.src = normalizedUrl;
+          } else {
+            video.src = normalizedUrl;
+            video.addEventListener('error', () => {
+              video.style.display = 'none';
+              coverImage.style.display = 'block';
+              document.getElementById('det-video-overlay').style.display = 'flex';
+              document.getElementById('det-video-title').textContent = 'Video file unavailable';
+              watchButton.disabled = true;
+              watchButton.textContent = 'Video unavailable';
+            }, { once: true });
+          }
+        } else {
+          watchButton.disabled = true;
+          watchButton.innerHTML = '<i class="fas fa-video-slash"></i> No Video';
+        }
+
+        // Populate Expert
+        document.getElementById('expert-name').textContent = recordData.expert_name;
+        document.getElementById('expert-org').textContent = recordData.organization_or_trade || '';
+        document.getElementById('expert-bio').textContent = recordData.expert_bio || 'No contributor biography provided.';
+        document.getElementById('expert-loc').textContent = recordData.expert_location || '';
+        if (recordData.expert_avatar) {
+          document.getElementById('expert-avatar').src = recordData.expert_avatar;
+          document.getElementById('expert-avatar').alt = `Profile image for ${recordData.expert_name}`;
+        } else {
+          document.getElementById('expert-avatar').style.display = 'none';
+        }
+
+        // Reviewer
+        if (recordData.reviewer_name) {
+          document.getElementById('det-reviewer-name').textContent = recordData.reviewer_name;
+          document.getElementById('reviewer-card').style.display = 'block';
+        }
+        if (recordData.attribution_consent) {
+          const consentBox = document.getElementById('expert-consent-box');
+          consentBox.textContent = `Contributor attribution and sharing note: ${recordData.attribution_consent}`;
+          consentBox.style.display = 'block';
+        }
+
+        // Populate Tools with Local Names
+        const toolsList = document.getElementById('det-tools-list');
+        if (recordData.tools && recordData.tools.length > 0) {
+          toolsList.innerHTML = recordData.tools.map(t => `
+            <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;color:var(--slate-700);">
+              <i class="fas fa-wrench" style="color:var(--teal-600);margin-top:3px;font-size:0.85rem;"></i>
+              <div>
+                <strong>${t.name}</strong> ${t.local_name ? `<em style="color:var(--teal-700);">(${t.local_name})</em>` : ''}
+                ${t.specification ? `<div style="font-size:0.78rem;color:var(--slate-500);">${t.specification}</div>` : ''}
+              </div>
+            </li>
+          `).join('');
+        } else {
+          toolsList.innerHTML = '<li style="color:#64748b;font-size:0.85rem;">No tools listed for this guide.</li>';
+        }
+
+        // Populate Materials with Local Names & Sourcing
+        const matList = document.getElementById('det-materials-list');
+        if (recordData.materials && recordData.materials.length > 0) {
+          matList.innerHTML = recordData.materials.map(m => `
+            <li style="display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;color:var(--slate-700);">
+              <i class="fas fa-leaf" style="color:var(--gold-600);margin-top:3px;font-size:0.85rem;"></i>
+              <div>
+                <strong>${m.name}</strong> ${m.local_name ? `<em style="color:var(--gold-700);">(${m.local_name})</em>` : ''}: ${m.quantity} ${m.unit || ''}
+                ${m.source_location ? `<div style="font-size:0.78rem;color:var(--slate-500);"><i class="fas fa-map-pin"></i> ${m.source_location}</div>` : ''}
+              </div>
+            </li>
+          `).join('');
+        } else {
+          matList.innerHTML = '<li style="color:#64748b;font-size:0.85rem;">No materials listed for this guide.</li>';
+        }
+
+        // Populate Steps
+        renderStepsTimeline();
+
+        // Populate Enrollment Status
+        renderEnrollmentCard();
+
+        // Assessment Link
+        const assessLink = document.getElementById('assessment-link-btn');
+        if (recordData.assessment) {
+          assessLink.href = `/assessment.html?id=${recordData.assessment.id}`;
+        } else {
+          assessLink.style.display = 'none';
+        }
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    }
+
+    function toggleVideoPlayback() {
+      const video = document.getElementById('det-video-player');
+      const iframe = document.getElementById('det-video-iframe');
+      const sourceUrl = normalizeVideoUrl(recordData && recordData.demo_video_url ? recordData.demo_video_url : (recordData && recordData.media ? (recordData.media.find(m => m.media_type === 'video') || {}).file_path : ''));
+
+      if (!sourceUrl) {
+        api.toast('No video demonstration is available for this guide.', 'info');
+        return;
+      }
+
+      if (sourceUrl.includes('youtube.com/embed/') || sourceUrl.includes('youtu.be/')) {
+        iframe.src = sourceUrl;
+        iframe.style.display = 'block';
+        video.style.display = 'none';
+      } else {
+        if (!video.src) {
+          api.toast('No video demonstration is available for this guide.', 'info');
+          return;
+        }
+        video.style.display = 'block';
+        iframe.style.display = 'none';
+        video.play().catch(() => {
+          if (!video.error) api.toast('The video demonstration could not be played.', 'error');
+        });
+      }
+
+      document.getElementById('det-cover-img').style.display = 'none';
+      document.getElementById('det-video-overlay').style.display = 'none';
+    }
+
+    function renderStepsTimeline() {
+      const container = document.getElementById('det-steps-timeline');
+      const steps = recordData.steps || [];
+      const isEnrolled = recordData.learnerProgress !== null;
+
+      if (isEnrolled) {
+        const completedCount = recordData.learnerProgress.completed_steps_count || 0;
+        document.getElementById('step-completion-tracker').innerHTML = `
+          <span style="color:var(--teal-700);">${completedCount} of ${steps.length} Steps Completed (${recordData.learnerProgress.completion_percentage}%)</span>
+        `;
+      }
+
+      container.innerHTML = steps.map(s => {
+        const isDone = isEnrolled && (s.step_number <= (recordData.learnerProgress.completed_steps_count || 0));
+
+        return `
+          <div class="step-item ${isDone ? 'completed' : ''}" id="step-item-${s.id}">
+            <div class="step-badge">${isDone ? '<i class="fas fa-check"></i>' : s.step_number}</div>
+            <div class="step-card" style="overflow:hidden;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+                <h3 class="step-title" style="margin-bottom:0;font-size:1.15rem;">${s.title}</h3>
+                ${isEnrolled ? `
+                  <button type="button" class="btn btn-sm ${isDone ? 'btn-outline' : 'btn-teal'}" data-action="complete-step" data-step-id="${s.id}" ${isDone ? 'disabled' : ''}>
+                    ${isDone ? '<i class="fas fa-check-circle" style="color:var(--emerald-600);"></i> Completed' : '<i class="far fa-circle"></i> Mark Step Complete'}
+                  </button>
+                ` : ''}
+              </div>
+
+              ${s.image_url ? `
+                <div style="margin:12px 0 16px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--slate-200);max-height:280px;background:#000;">
+                  <img src="${s.image_url}" alt="${s.title}" style="width:100%;height:100%;max-height:280px;object-fit:cover;">
+                </div>
+              ` : ''}
+
+              <p class="step-instruction" style="font-size:0.95rem;line-height:1.65;color:var(--slate-800);">${s.instruction}</p>
+
+              ${s.safety_warning ? `
+                <div class="alert-safety" style="margin:10px 0;">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <div><strong>Safety Warning:</strong> ${s.safety_warning}</div>
+                </div>
+              ` : ''}
+
+              ${s.tip ? `
+                <div class="alert-tip" style="margin:10px 0;">
+                  <i class="fas fa-lightbulb"></i>
+                  <div><strong>Artisan Tip:</strong> ${s.tip}</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderEnrollmentCard() {
+      const area = document.getElementById('enrollment-status-area');
+      const progress = recordData.learnerProgress;
+
+      if (!progress) {
+        const enrollmentAction = isAuthenticated
+          ? `<button type="button" class="btn btn-teal btn-lg" style="width:100%;" data-action="enroll">
+              <i class="fas fa-user-plus"></i> Enrol in Practical Craft
+            </button>`
+          : `<a href="/login.html" class="btn btn-teal btn-lg" style="width:100%;">
+              <i class="fas fa-sign-in-alt"></i> Sign in to enrol
+            </a>`;
+        area.innerHTML = `
+          <p style="font-size:0.9rem;color:var(--slate-600);margin-bottom:16px;">
+            Enrol in this craft module to track procedural steps, upload photographs of your finished work, and earn a verified mastery certificate.
+          </p>
+          ${enrollmentAction}
+        `;
+        return;
+      }
+
+      area.innerHTML = `
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:6px;">
+            <span>Module Progress</span>
+            <span style="color:var(--teal-700);">${progress.completion_percentage}%</span>
+          </div>
+          <div style="height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden;">
+            <div style="height:100%;background:var(--teal-600);width:${progress.completion_percentage}%;border-radius:5px;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="/learning-progress.html?knowledge_id=${recordData.id}" class="btn btn-outline btn-sm" style="width:100%;">
+            <i class="fas fa-tasks"></i> View Progress Log
+          </a>
+
+          <a href="/practical-submission.html?knowledge_id=${recordData.id}" class="btn btn-outline btn-sm" style="width:100%;">
+            <i class="fas fa-camera"></i> Submit Finished Craft Photos
+          </a>
+
+          ${recordData.assessment ? `
+            <a href="/assessment.html?id=${recordData.assessment.id}" class="btn btn-teal btn-sm" style="width:100%;">
+              <i class="fas fa-clipboard-check"></i> Take Assessment (${recordData.assessment.passing_score}% Pass)
+            </a>
+          ` : ''}
+
+          ${recordData.certificate ? `
+            <a href="${recordData.certificate.verification_url}" class="btn btn-gold btn-sm" style="width:100%;">
+              <i class="fas fa-award"></i> View My Certificate (${recordData.certificate.certificate_code})
+            </a>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    async function handleEnroll() {
+      try {
+        const res = await api.post(`/learning/${knowledgeId}/enroll`);
+        api.toast(res.message, 'success');
+        recordData.learnerProgress = res.progress;
+        renderStepsTimeline();
+        renderEnrollmentCard();
+      } catch (err) {
+        if (err.status === 401) {
+          api.toast('Please sign in or register as a learner to track progress.', 'warning');
+        } else {
+          api.toast(err.message, 'error');
+        }
+      }
+    }
+
+    async function markStepDone(stepId) {
+      try {
+        const res = await api.post(`/learning/${knowledgeId}/steps/${stepId}/complete`);
+        api.toast(res.message, 'success');
+        
+        if (!recordData.learnerProgress) {
+          recordData.learnerProgress = { completed_steps_count: res.completedCount, total_steps_count: res.totalSteps, completion_percentage: res.percentage };
+        } else {
+          recordData.learnerProgress.completed_steps_count = res.completedCount;
+          recordData.learnerProgress.completion_percentage = res.percentage;
+        }
+
+        if (res.certificate) {
+          recordData.certificate = res.certificate;
+          api.toast('Congratulations! Certificate of Practical Mastery Awarded!', 'success', 6000);
+        }
+
+        renderStepsTimeline();
+        renderEnrollmentCard();
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    }
+  </script>
+</body>
+</html>

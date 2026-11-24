@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+
+  <defs>
+    <linearGradient id="broomBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" />
+      <stop offset="50%" stop-color="#14532D" />
+      <stop offset="100%" stop-color="#022C22" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#broomBg)"/>
+
+  <!-- Traditional Palm Frond Sweeping Broom (Olweyo) -->
+  <g transform="translate(400, 230) rotate(-25)">
+    <!-- Palm Ribs Fanning Out -->
+    <path d="M 0 -130 L -90 160 L 90 160 Z" fill="#D97706" opacity="0.3"/>
+    <line x1="0" y1="-80" x2="-112.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-108.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-103.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-99.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-94.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-90.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-85.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-81.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-76.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-72.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-67.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-63.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-58.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-54.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-49.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-45.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-40.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-36.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-31.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-27.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-22.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-18.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-13.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-9.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="-4.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="0.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="4.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="9.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="13.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="18.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="22.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="27.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="31.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="36.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="40.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="45.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="49.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="54.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="58.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="63.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="67.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="72.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="76.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="81.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="85.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="90.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="94.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="99.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="103.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="108.0" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/><line x1="0" y1="-80" x2="112.5" y2="170" stroke="#FDE68A" stroke-width="2" opacity="0.85"/>
+
+    <!-- Tightly Bound Sisal Cord Handle (Cross-knotted) -->
+    <rect x="-24" y="-140" width="48" height="110" rx="14" fill="#B45309" stroke="#78350F" stroke-width="4"/>
+    <line x1="-24" y1="-120" x2="24" y2="-120" stroke="#FEF3C7" stroke-width="4"/>
+    <line x1="-24" y1="-100" x2="24" y2="-100" stroke="#FEF3C7" stroke-width="4"/>
+    <line x1="-24" y1="-80" x2="24" y2="-80" stroke="#FEF3C7" stroke-width="4"/>
+    <line x1="-24" y1="-60" x2="24" y2="-60" stroke="#FEF3C7" stroke-width="4"/>
+    <line x1="-24" y1="-40" x2="24" y2="-40" stroke="#FEF3C7" stroke-width="4"/>
+    
+    <!-- Cross decorative binding cord -->
+    <line x1="-20" y1="-130" x2="20" y2="-50" stroke="#EF4444" stroke-width="3"/>
+    <line x1="20" y1="-130" x2="-20" y2="-50" stroke="#EF4444" stroke-width="3"/>
+  </g>
+
+  <!-- Title Badge Overlay -->
+  <rect x="40" y="380" width="430" height="80" rx="12" fill="rgba(15,23,42,0.85)" stroke="rgba(34,197,94,0.5)" stroke-width="1.5"/>
+  <text x="60" y="414" fill="#4ADE80" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="1">HOUSEHOLD ESSENTIALS</text>
+  <text x="60" y="442" fill="#FFFFFF" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="800">Handmade Products (Olweyo)</text>
+
+</svg>

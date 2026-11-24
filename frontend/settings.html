@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Settings – LifeTrace Admin</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--rose-600);">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+        <div>
+          <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:8px;">Administrative Control</span>
+          <h1 style="font-size:2rem;font-weight:800;color:var(--white);">Platform Configuration & Policy Settings</h1>
+          <p style="color:var(--slate-300);font-size:1rem;margin-top:4px;">
+            Configure certificate qualification thresholds, registration access, and institutional parameters.
+          </p>
+        </div>
+
+        <a href="/admin.html" class="btn btn-outline-white btn-sm"><i class="fas fa-arrow-left"></i> Admin Console</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="max-width:750px;padding:40px 20px;">
+    <div class="card" style="padding:32px;">
+      <h2 style="font-size:1.3rem;font-weight:700;color:var(--navy-900);margin-bottom:20px;border-bottom:1px solid #e2e8f0;padding-bottom:12px;">
+        <i class="fas fa-sliders-h" style="color:var(--teal-600);margin-right:8px;"></i> System Policy Settings
+      </h2>
+
+      <form id="settings-form">
+        <div class="form-group">
+          <label class="form-label" for="setting-site-name">Platform Brand Name</label>
+          <input type="text" id="setting-site-name" class="form-control" value="LifeTrace Uganda" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="setting-contact-email">Official Institutional Contact Email</label>
+          <input type="email" id="setting-contact-email" class="form-control" value="support@lifetrace.ug" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="setting-min-score">Minimum Assessment Score for Practical Certificate (%)</label>
+          <input type="number" id="setting-min-score" class="form-control" value="75" min="50" max="100" required>
+          <div class="form-hint">Learners must achieve at least this percentage score to earn a verifiable certificate.</div>
+        </div>
+
+        <div style="background:var(--slate-50);border:1px solid var(--slate-200);padding:20px;border-radius:var(--radius-md);margin-bottom:24px;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:var(--navy-900);margin-bottom:14px;">Operational Policies</h4>
+
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" id="setting-public-reg" checked style="accent-color:var(--teal-600);width:18px;height:18px;">
+              <div>
+                <span style="font-weight:600;font-size:0.9rem;">Allow Public Registration (Learners & Experts)</span>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Permits visitors to register self-service accounts via the web portal.</div>
+              </div>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" id="setting-require-review" checked style="accent-color:var(--teal-600);width:18px;height:18px;">
+              <div>
+                <span style="font-weight:600;font-size:0.9rem;">Enforce Mandatory Peer Review</span>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Knowledge records must be approved by a verified reviewer before appearing in the public library.</div>
+              </div>
+            </label>
+
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" id="setting-maintenance" style="accent-color:var(--rose-600);width:18px;height:18px;">
+              <div>
+                <span style="font-weight:600;font-size:0.9rem;color:var(--rose-600);">Maintenance Mode</span>
+                <div style="font-size:0.75rem;color:var(--slate-500);">Display maintenance banner and make library read-only for public visitors.</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-save-settings" class="btn btn-teal btn-lg" style="width:100%;">
+          <i class="fas fa-save"></i> Save Platform Settings
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const meRes = await api.get('/auth/me');
+        if (!meRes.authenticated || meRes.user.role !== 'admin') {
+          api.toast('Settings access restricted to administrators.', 'error');
+          setTimeout(() => window.location.href = '/dashboard.html', 1000);
+          return;
+        }
+
+        const res = await api.get('/admin/settings');
+        if (res.settings) {
+          const s = res.settings;
+          if (s.site_name) document.getElementById('setting-site-name').value = s.site_name;
+          if (s.contact_email) document.getElementById('setting-contact-email').value = s.contact_email;
+          if (s.min_passing_score_cert) document.getElementById('setting-min-score').value = s.min_passing_score_cert;
+          document.getElementById('setting-public-reg').checked = s.allow_public_registration !== 'false';
+          document.getElementById('setting-require-review').checked = s.require_review_for_publish !== 'false';
+          document.getElementById('setting-maintenance').checked = s.maintenance_mode === 'true';
+        }
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    });
+
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-settings');
+      btn.disabled = true;
+
+      const settings = {
+        site_name: document.getElementById('setting-site-name').value.trim(),
+        contact_email: document.getElementById('setting-contact-email').value.trim(),
+        min_passing_score_cert: document.getElementById('setting-min-score').value,
+        allow_public_registration: document.getElementById('setting-public-reg').checked ? 'true' : 'false',
+        require_review_for_publish: document.getElementById('setting-require-review').checked ? 'true' : 'false',
+        maintenance_mode: document.getElementById('setting-maintenance').checked ? 'true' : 'false'
+      };
+
+      try {
+        const res = await api.put('/admin/settings', { settings });
+        api.toast(res.message, 'success');
+      } catch (err) {
+        api.toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

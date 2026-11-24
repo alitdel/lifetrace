@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review & Technical Verification Desk – LifeTrace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--gold-500);">
+    <div class="container">
+      <span class="badge" style="background:var(--gold-500);color:var(--navy-950);margin-bottom:8px;">Human Peer Verification</span>
+      <h1 style="font-size:2rem;font-weight:800;color:var(--white);">Technical Review & Verification Desk</h1>
+      <p style="color:var(--slate-300);font-size:1rem;margin-top:6px;">
+        Examine vocational procedures, inspect occupational safety compliance, and decide publication readiness.
+      </p>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Active Review Inspections -->
+    <div class="card" style="margin-bottom:30px;">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-inbox" style="color:var(--gold-600);margin-right:8px;"></i> Submissions Queue</h3>
+        <div style="display:flex;gap:10px;">
+          <select id="filter-status" class="form-control" style="width:180px;padding:6px 12px;font-size:0.85rem;" onchange="loadSubmissions()">
+            <option value="all">All Pending</option>
+            <option value="submitted">Submitted (New)</option>
+            <option value="under_review">Under Active Review</option>
+            <option value="rejected">Rejected Records</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Module Title & Category</th>
+              <th>Expert Contributor</th>
+              <th>Skill Level</th>
+              <th>Status</th>
+              <th>Submitted Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="submissions-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:30px;"><i class="fas fa-spinner fa-spin"></i> Loading review queue...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Active Inspection Modal / Details Area -->
+    <div id="inspection-card" class="card" style="display:none;padding:35px;border:2px solid var(--teal-600);margin-bottom:40px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;border-bottom:1px solid #e2e8f0;padding-bottom:14px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <span class="badge badge-under_review" id="insp-status">Under Review</span>
+          <h2 style="font-size:1.6rem;font-weight:800;color:var(--navy-900);margin-top:6px;" id="insp-title">-</h2>
+          <div style="font-size:1.05rem;font-style:italic;color:var(--gold-600);margin-bottom:4px;" id="insp-local-name"></div>
+          <div style="font-size:0.85rem;color:var(--slate-500);">Contributed by <strong id="insp-expert">-</strong> • Category: <strong id="insp-cat">-</strong> • Community: <strong id="insp-region">-</strong></div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="closeInspection()"><i class="fas fa-times"></i> Close Inspector</button>
+      </div>
+
+      <!-- Cultural Background & Attribution Review -->
+      <div id="insp-cultural-card" style="background:#fef3c7;border-left:4px solid var(--gold-500);padding:14px 18px;border-radius:4px;margin-bottom:20px;">
+        <div style="font-weight:700;color:#92400e;margin-bottom:4px;"><i class="fas fa-feather-alt"></i> Cultural Background & Significance</div>
+        <p id="insp-cultural" style="font-size:0.9rem;color:#78350f;margin-bottom:6px;line-height:1.5;"></p>
+        <div style="font-size:0.8rem;color:#92400e;"><strong>Attribution & Consent Statement:</strong> <span id="insp-attribution"></span></div>
+      </div>
+
+      <!-- Materials Sourcing & Preparation -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="background:var(--slate-50);padding:14px;border-radius:var(--radius-md);border:1px solid var(--slate-200);">
+          <strong style="color:var(--navy-900);font-size:0.9rem;"><i class="fas fa-map-marker-alt" style="color:var(--teal-600);"></i> Raw Materials & Sourcing:</strong>
+          <p id="insp-sourcing" style="font-size:0.85rem;color:var(--slate-700);margin-top:4px;line-height:1.4;"></p>
+        </div>
+        <div style="background:var(--slate-50);padding:14px;border-radius:var(--radius-md);border:1px solid var(--slate-200);">
+          <strong style="color:var(--navy-900);font-size:0.9rem;"><i class="fas fa-tools" style="color:var(--gold-600);"></i> Preparation Procedures:</strong>
+          <p id="insp-prep" style="font-size:0.85rem;color:var(--slate-700);margin-top:4px;line-height:1.4;"></p>
+        </div>
+      </div>
+
+      <!-- Module Summary & Safety Checklist -->
+      <div style="margin-bottom:24px;">
+        <h4 style="font-size:0.95rem;text-transform:uppercase;color:var(--slate-500);font-weight:700;margin-bottom:8px;">Summary & Safety Check</h4>
+        <p id="insp-summary" style="font-size:0.95rem;color:var(--slate-700);line-height:1.6;margin-bottom:16px;"></p>
+        
+        <div class="alert-safety" style="margin-bottom:16px;">
+          <i class="fas fa-shield-alt" style="font-size:1.5rem;"></i>
+          <div>
+            <strong>Documented Safety Precautions:</strong>
+            <div id="insp-safety" style="margin-top:4px;white-space:pre-line;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steps Inspection -->
+      <div style="margin-bottom:24px;">
+        <h4 style="font-size:0.95rem;text-transform:uppercase;color:var(--slate-500);font-weight:700;margin-bottom:12px;">Procedural Steps Verification</h4>
+        <div id="insp-steps-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+
+      <!-- Formal Review Decision Form -->
+      <div style="background:var(--slate-100);padding:24px;border-radius:var(--radius-lg);border:1px solid var(--slate-300);">
+        <h3 style="font-size:1.2rem;font-weight:800;color:var(--navy-900);margin-bottom:16px;">
+          <i class="fas fa-stamp" style="color:var(--gold-600);margin-right:8px;"></i> Formal Reviewer Decision & Scoring
+        </h3>
+
+        <form id="decision-form">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Completeness (1-5) <span class="req">*</span></label>
+              <select id="score-completeness" class="form-control" required>
+                <option value="5">5 - Fully Complete & Documented</option>
+                <option value="4">4 - Substantially Complete</option>
+                <option value="3">3 - Adequate with minor gaps</option>
+                <option value="2">2 - Incomplete</option>
+                <option value="1">1 - Deficient</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Instruction Clarity (1-5) <span class="req">*</span></label>
+              <select id="score-clarity" class="form-control" required>
+                <option value="5">5 - Crystal Clear & Actionable</option>
+                <option value="4">4 - Clear</option>
+                <option value="3">3 - Fair</option>
+                <option value="2">2 - Ambiguous</option>
+                <option value="1">1 - Confusing</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Safety Compliance (1-5) <span class="req">*</span></label>
+              <select id="score-safety" class="form-control" required>
+                <option value="5">5 - Exemplary Risk Mitigation</option>
+                <option value="4">4 - Good Safety Rules</option>
+                <option value="3">3 - Acceptable</option>
+                <option value="2">2 - High Hazard Omissions</option>
+                <option value="1">1 - Unsafe / Dangerous</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Review Decision <span class="req">*</span></label>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+              <label style="border:2px solid var(--emerald-600);background:var(--emerald-100);padding:12px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;gap:10px;">
+                <input type="radio" name="review_decision" value="approved" checked style="accent-color:var(--emerald-600);">
+                <div>
+                  <div style="font-weight:700;color:var(--emerald-600);">Approve & Publish</div>
+                  <div style="font-size:0.75rem;color:var(--slate-600);">Publish to Public Library</div>
+                </div>
+              </label>
+
+              <label style="border:2px solid var(--gold-600);background:var(--gold-50);padding:12px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;gap:10px;">
+                <input type="radio" name="review_decision" value="correction_requested" style="accent-color:var(--gold-600);">
+                <div>
+                  <div style="font-weight:700;color:var(--gold-700);">Request Revisions</div>
+                  <div style="font-size:0.75rem;color:var(--slate-600);">Send back to expert with notes</div>
+                </div>
+              </label>
+
+              <label style="border:2px solid var(--rose-600);background:var(--rose-100);padding:12px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;gap:10px;">
+                <input type="radio" name="review_decision" value="rejected" style="accent-color:var(--rose-600);">
+                <div>
+                  <div style="font-weight:700;color:var(--rose-600);">Reject Submission</div>
+                  <div style="font-size:0.75rem;color:var(--slate-600);">Reject with permanent reason</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="review-comments">Constructive Review Feedback <span class="req">*</span></label>
+            <textarea id="review-comments" class="form-control" style="min-height:90px;" placeholder="Detail your technical assessment, observations, and instructions for the expert..." required></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:12px;">
+            <button type="button" class="btn btn-outline" onclick="closeInspection()">Cancel</button>
+            <button type="submit" id="btn-submit-decision" class="btn btn-teal btn-lg">
+              <i class="fas fa-check-shield"></i> Submit Official Review Decision
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let activeInspectionId = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const meRes = await api.get('/auth/me');
+        if (!meRes.authenticated || (meRes.user.role !== 'reviewer' && meRes.user.role !== 'admin')) {
+          api.toast('Review desk is restricted to authorized reviewers and administrators.', 'warning');
+          setTimeout(() => window.location.href = '/dashboard.html', 1000);
+          return;
+        }
+
+        await loadSubmissions();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoInspectId = urlParams.get('id');
+        if (autoInspectId) {
+          inspectSubmission(autoInspectId);
+        }
+      } catch (err) {
+        window.location.href = '/login.html';
+      }
+    });
+
+    async function loadSubmissions() {
+      const status = document.getElementById('filter-status').value;
+      const tbody = document.getElementById('submissions-tbody');
+
+      try {
+        const res = await api.get('/reviews/pending', { status });
+        const subs = res.submissions || [];
+
+        if (subs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#64748b;">No submissions matching selected filter.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = subs.map(s => `
+          <tr>
+            <td>
+              <div style="font-weight:700;color:var(--navy-900);">${s.title}</div>
+              <div style="font-size:0.75rem;color:var(--slate-500);"><i class="fas ${s.category_icon || 'fa-tools'}"></i> ${s.category_name} • ${s.steps_count} steps</div>
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:0.85rem;">${s.expert_name}</div>
+              <div style="font-size:0.75rem;color:var(--slate-500);">${s.expert_org || 'Expert'}</div>
+            </td>
+            <td><span class="badge badge-skill">${s.skill_level}</span></td>
+            <td><span class="badge badge-${s.status}">${s.status.replace('_', ' ')}</span></td>
+            <td>${new Date(s.created_at).toLocaleDateString('en-GB')}</td>
+            <td>
+              <button class="btn btn-teal btn-sm" onclick="inspectSubmission(${s.id})">
+                <i class="fas fa-microscope"></i> Inspect & Decide
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--rose-600);text-align:center;padding:20px;">${err.message}</td></tr>`;
+      }
+    }
+
+    async function inspectSubmission(id) {
+      activeInspectionId = id;
+      const card = document.getElementById('inspection-card');
+      card.style.display = 'block';
+      card.scrollIntoView({ behavior: 'smooth' });
+
+      try {
+        // Commences review status if still 'submitted'
+        await api.post(`/reviews/${id}/start`).catch(() => {});
+
+        const res = await api.get(`/knowledge/details/${id}`);
+        const r = res.record;
+
+        document.getElementById('insp-title').textContent = r.title;
+        document.getElementById('insp-local-name').textContent = r.local_name ? `"${r.local_name}"` : '';
+        document.getElementById('insp-status').textContent = r.status.replace('_', ' ').toUpperCase();
+        document.getElementById('insp-expert').textContent = r.expert_name;
+        document.getElementById('insp-cat').textContent = r.category_name;
+        document.getElementById('insp-region').textContent = r.community_region || 'Uganda';
+        document.getElementById('insp-summary').textContent = r.short_summary;
+        document.getElementById('insp-safety').textContent = r.safety_precautions;
+        document.getElementById('insp-cultural').textContent = r.cultural_background || 'No cultural notes provided.';
+        document.getElementById('insp-attribution').textContent = r.attribution_consent || 'Preserved with contributor consent under LifeTrace Community Attribution.';
+        document.getElementById('insp-sourcing').textContent = r.material_sourcing || 'Standard local market & wetland harvesting.';
+        document.getElementById('insp-prep').textContent = r.preparation_instructions || 'Standard artisan material preparation.';
+
+        const stepsList = document.getElementById('insp-steps-list');
+        stepsList.innerHTML = (r.steps || []).map(s => `
+          <div style="background:white;border:1px solid #e2e8f0;padding:14px;border-radius:var(--radius-md);display:flex;gap:16px;align-items:flex-start;">
+            ${s.photo_url ? `<img src="${s.photo_url}" alt="Step ${s.step_number}" style="width:110px;height:75px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1;flex-shrink:0;">` : ''}
+            <div style="flex-grow:1;">
+              <div style="font-weight:700;color:var(--teal-700);margin-bottom:4px;">Step ${s.step_number}: ${s.title}</div>
+              <p style="font-size:0.88rem;color:var(--slate-700);margin-bottom:6px;">${s.instruction}</p>
+              ${s.safety_warning ? `<div style="font-size:0.8rem;color:var(--rose-600);"><i class="fas fa-exclamation-triangle"></i> Warning: ${s.safety_warning}</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    }
+
+    function closeInspection() {
+      document.getElementById('inspection-card').style.display = 'none';
+      activeInspectionId = null;
+    }
+
+    document.getElementById('decision-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!activeInspectionId) return;
+
+      const btn = document.getElementById('btn-submit-decision');
+      btn.disabled = true;
+
+      const decision = document.querySelector('input[name="review_decision"]:checked').value;
+      const completeness_score = document.getElementById('score-completeness').value;
+      const clarity_score = document.getElementById('score-clarity').value;
+      const safety_score = document.getElementById('score-safety').value;
+      const comments = document.getElementById('review-comments').value.trim();
+
+      try {
+        const res = await api.post(`/reviews/${activeInspectionId}/decision`, {
+          decision,
+          completeness_score,
+          clarity_score,
+          safety_score,
+          comments
+        });
+
+        api.toast(res.message, 'success');
+        closeInspection();
+        await loadSubmissions();
+      } catch (err) {
+        api.toast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+

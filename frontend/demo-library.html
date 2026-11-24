@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Craft Demonstrations – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <section style="background:linear-gradient(135deg, var(--navy-900), var(--navy-800));color:var(--white);padding:52px 0 42px;">
+    <div class="container">
+      <div style="max-width:760px;">
+        <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:8px;">Craft videos</span>
+        <h1 style="margin:0;font-size:2.3rem;font-weight:800;color:var(--white);">Craft Demonstrations</h1>
+        <p style="margin-top:10px;color:var(--slate-300);font-size:1.04rem;line-height:1.7;">
+          Explore techniques from craft traditions across Uganda. Each video links to its original publisher.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="padding:30px 20px 0;">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="demo-category-pills"></div>
+      <a href="/knowledge-library.html" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to library</a>
+    </div>
+
+    <div class="demo-library-layout" style="display:grid;gap:22px;align-items:start;">
+      <div class="panel" style="padding:0;overflow:hidden;border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);">
+        <div style="background:var(--slate-900);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <div>
+            <div style="font-size:0.74rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate-400);">Now playing</div>
+            <div id="demo-player-label" style="font-weight:800;color:var(--white);font-size:1.05rem;">Craft demonstration</div>
+          </div>
+          <span class="badge" style="background:var(--rose-600);color:white;">Video</span>
+        </div>
+        <div style="background:#000; aspect-ratio:16/9; width:100%; display:flex; align-items:center; justify-content:center;">
+          <iframe id="demo-player-iframe" title="Selected demo video" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="width:100%;height:100%;border:0;background:#000;"></iframe>
+        </div>
+        <div style="padding:22px 22px 18px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+            <div>
+              <div id="demo-video-title" style="font-size:1.6rem;font-weight:800;color:var(--navy-900);margin:0;">Craft video</div>
+              <div id="demo-video-stage" style="color:var(--teal-700);font-size:0.82rem;font-weight:700;margin-top:6px;">Learning stage</div>
+            </div>
+            <span id="demo-video-tag" class="badge" style="background:var(--gold-100);color:var(--gold-800);border:1px solid rgba(234,179,8,0.3);">Video</span>
+          </div>
+          <p id="demo-video-description" style="color:var(--slate-600);margin-top:16px;line-height:1.7;">
+            Select a craft video to explore its techniques.
+          </p>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--slate-200);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate-500);">Source</div>
+              <div id="demo-video-source" style="font-weight:700;color:var(--navy-900);">Publisher attribution</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate-500);">Type</div>
+              <div id="demo-video-source-type" style="font-weight:700;color:var(--teal-700);">YouTube publisher</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel" style="padding:20px;">
+          <div style="font-size:0.82rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--slate-500);margin-bottom:12px;">Filter by craft</div>
+          <select id="demo-filter" class="form-control" style="margin-bottom:16px;">
+            <option value="all">All craft categories</option>
+          </select>
+          <div id="demo-video-list" class="stack-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    const demoVideos = window.DEMO_VIDEO_LIBRARY || [];
+    let selectedCategory = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCategoryPills();
+      populateCategoryFilter();
+      renderVideoList();
+      selectDemoVideo(getSelectedVideoId());
+    });
+
+    function getSelectedVideoId() {
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('video');
+      if (!requested) return demoVideos[0] ? demoVideos[0].id : '';
+      return demoVideos.some(video => video.id === requested) ? requested : (demoVideos[0] ? demoVideos[0].id : '');
+    }
+
+    function renderCategoryPills() {
+      const target = document.getElementById('demo-category-pills');
+      if (!target) return;
+
+      const categories = ['all', ...new Set(demoVideos.map(v => v.category))];
+      target.innerHTML = categories.map(category => {
+        const label = category === 'all' ? 'All Skills' : category;
+        const active = selectedCategory === category ? 'btn-teal' : 'btn-outline';
+        return `<button class="btn btn-sm ${active}" data-demo-category="${category}" type="button">${label}</button>`;
+      }).join('');
+
+      target.querySelectorAll('[data-demo-category]').forEach(button => {
+        button.addEventListener('click', () => {
+          selectedCategory = button.dataset.demoCategory;
+          document.getElementById('demo-filter').value = selectedCategory;
+          renderCategoryPills();
+          renderVideoList();
+        });
+      });
+    }
+
+    function populateCategoryFilter() {
+      const target = document.getElementById('demo-filter');
+      if (!target) return;
+
+      const categories = [...new Set(demoVideos.map(v => v.category))];
+      target.innerHTML = '<option value="all">All craft categories</option>' + categories.map(category => `
+        <option value="${category}">${category}</option>
+      `).join('');
+
+      target.addEventListener('change', (event) => {
+        selectedCategory = event.target.value;
+        renderCategoryPills();
+        renderVideoList();
+      });
+    }
+
+    function getFilteredVideos() {
+      if (!selectedCategory || selectedCategory === 'all') return demoVideos;
+      return demoVideos.filter(video => video.category === selectedCategory);
+    }
+
+    function renderVideoList() {
+      const list = document.getElementById('demo-video-list');
+      if (!list) return;
+
+      const filtered = getFilteredVideos();
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty-state">No demos available in this category.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(video => `
+        <button type="button" class="video-selector" data-video-id="${video.id}" style="display:flex;gap:12px;align-items:center;border:1px solid var(--slate-200);background:var(--white);border-radius:14px;padding:10px;cursor:pointer;width:100%;text-align:left;">
+          <img src="${video.thumbnail}" alt="${video.title}" style="width:92px;height:66px;object-fit:cover;border-radius:10px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.74rem;color:var(--teal-700);font-weight:700;">${video.category}</div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--navy-900);margin:4px 0 2px;line-height:1.4;">${video.title}</div>
+            <div style="font-size:0.73rem;color:var(--slate-500);">${video.source}</div>
+          </div>
+        </button>
+      `).join('');
+
+      list.querySelectorAll('[data-video-id]').forEach(button => {
+        button.addEventListener('click', () => {
+          const next = button.dataset.videoId;
+          selectDemoVideo(next);
+          const url = new URL(window.location.href);
+          url.searchParams.set('video', next);
+          window.history.replaceState({}, '', url);
+        });
+      });
+    }
+
+    function selectDemoVideo(videoId) {
+      const video = demoVideos.find(item => item.id === videoId) || demoVideos[0];
+      if (!video) return;
+
+      const player = document.getElementById('demo-player-iframe');
+      const title = document.getElementById('demo-video-title');
+      const stage = document.getElementById('demo-video-stage');
+      const description = document.getElementById('demo-video-description');
+      const source = document.getElementById('demo-video-source');
+      const sourceType = document.getElementById('demo-video-source-type');
+      const tag = document.getElementById('demo-video-tag');
+      const label = document.getElementById('demo-player-label');
+
+      player.src = normalizeVideoUrl(video.videoUrl);
+      title.textContent = video.title;
+      stage.textContent = video.stage;
+      description.textContent = video.description;
+      source.textContent = video.source;
+      sourceType.textContent = video.sourceType;
+      tag.textContent = video.badge;
+      label.textContent = video.category;
+
+      const buttons = document.querySelectorAll('[data-video-id]');
+      buttons.forEach(button => {
+        button.style.borderColor = button.dataset.videoId === video.id ? 'var(--teal-500)' : 'var(--slate-200)';
+        button.style.background = button.dataset.videoId === video.id ? 'rgba(15, 118, 110, 0.05)' : 'var(--white)';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+
+  <defs>
+    <linearGradient id="woodBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1C1917" />
+      <stop offset="50%" stop-color="#292524" />
+      <stop offset="100%" stop-color="#44403C" />
+    </linearGradient>
+    <radialGradient id="stoolGrad" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="50%" stop-color="#92400E" />
+      <stop offset="100%" stop-color="#451A03" />
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#woodBg)"/>
+
+  <!-- Three-Legged Royal Wooden Stool (Entebe y'Ekiganda) -->
+  <g transform="translate(400, 220)">
+    <ellipse cx="0" cy="180" rx="200" ry="35" fill="rgba(0,0,0,0.5)"/>
+    
+    <!-- Three Legs Carved from Solid Log -->
+    <path d="M -120 0 L -150 160 L -110 160 L -70 0 Z" fill="#78350F" stroke="#292524" stroke-width="3"/>
+    <path d="M 70 0 L 110 160 L 150 160 L 120 0 Z" fill="#78350F" stroke="#292524" stroke-width="3"/>
+    <path d="M -25 0 L -30 170 L 30 170 L 25 0 Z" fill="url(#stoolGrad)" stroke="#292524" stroke-width="3"/>
+
+    <!-- Round Concave Seat -->
+    <ellipse cx="0" cy="0" rx="160" ry="55" fill="url(#stoolGrad)" stroke="#FDE68A" stroke-width="4"/>
+    <ellipse cx="0" cy="-6" rx="140" ry="42" fill="#78350F"/>
+    
+    <!-- Concentric Carved Rings -->
+    <ellipse cx="0" cy="-6" rx="100" ry="30" fill="none" stroke="#FDE68A" stroke-width="3" opacity="0.7"/>
+    <ellipse cx="0" cy="-6" rx="60" ry="18" fill="none" stroke="#FDE68A" stroke-width="2" opacity="0.7"/>
+
+    <!-- Wood Adze (Empewo) Carver's Tool Beside Stool -->
+    <g transform="translate(-180, 50) rotate(25)">
+      <rect x="-8" y="-70" width="16" height="140" rx="6" fill="#F59E0B" stroke="#451A03" stroke-width="2"/>
+      <path d="M -30 -70 L 30 -70 L 20 -95 L -20 -95 Z" fill="#94A3B8" stroke="#0F172A" stroke-width="3"/>
+    </g>
+  </g>
+
+  <!-- Title Badge Overlay -->
+  <rect x="40" y="380" width="420" height="80" rx="12" fill="rgba(15,23,42,0.85)" stroke="rgba(217,119,6,0.5)" stroke-width="1.5"/>
+  <text x="60" y="414" fill="#FBBF24" font-family="'Segoe UI', sans-serif" font-size="14" font-weight="700" letter-spacing="1">INDIGENOUS TIMBER CARVING</text>
+  <text x="60" y="442" fill="#FFFFFF" font-family="'Segoe UI', sans-serif" font-size="22" font-weight="800">Woodcraft and Carving (Okubajja)</text>
+
+</svg>

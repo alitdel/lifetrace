@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Practical Learning Progress – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:40px 0 30px;border-bottom:3px solid var(--teal-600);">
+    <div class="container">
+      <span class="badge" style="background:var(--teal-600);color:white;margin-bottom:8px;">Competency-Based Learning</span>
+      <h1 style="font-size:2rem;font-weight:800;color:var(--white);">Practical Learning & Progress Tracker</h1>
+      <p style="color:var(--slate-300);font-size:1rem;margin-top:6px;">
+        Track step completions, review practical instructor feedback, and qualify for mastery certificates.
+      </p>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Course Cards with Progress Bars -->
+    <div id="progress-courses-container" style="display:flex;flex-direction:column;gap:24px;">
+      <div style="text-align:center;padding:50px 0;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--teal-600);"></i></div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const auth = await api.get('/auth/me');
+        if (!auth.authenticated) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const res = await api.get('/learning/my/courses');
+        const container = document.getElementById('progress-courses-container');
+        const courses = res.courses || [];
+
+        if (courses.length === 0) {
+          container.innerHTML = `
+            <div class="card" style="text-align:center;padding:60px 20px;">
+              <i class="fas fa-graduation-cap" style="font-size:3.5rem;color:var(--slate-300);margin-bottom:16px;"></i>
+              <h2 style="font-size:1.4rem;font-weight:700;color:var(--navy-900);">No active practical enrollments</h2>
+              <p style="color:var(--slate-600);margin:8px 0 24px;">Browse the Knowledge Library and enrol in a module to begin tracking your hands-on competencies.</p>
+              <a href="/knowledge-library.html" class="btn btn-teal btn-lg"><i class="fas fa-search"></i> Browse Practical Library</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = courses.map(c => `
+          <div class="card" style="padding:28px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:18px;">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span class="badge badge-skill">${c.category_name}</span>
+                  <span class="badge badge-${c.status}">${c.status.replace('_', ' ')}</span>
+                  <span style="font-size:0.8rem;color:var(--slate-500);"><i class="far fa-clock"></i> ${c.estimated_time_minutes} mins</span>
+                </div>
+                <h2 style="font-size:1.35rem;font-weight:700;color:var(--navy-900);">
+                  <a href="/knowledge-details.html?id=${c.knowledge_id}">${c.title}</a>
+                </h2>
+                <div style="font-size:0.85rem;color:var(--slate-500);margin-top:4px;">
+                  Master Expert: <strong>${c.expert_name}</strong>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <a href="/knowledge-details.html?id=${c.knowledge_id}" class="btn btn-outline btn-sm">
+                  <i class="fas fa-play"></i> Procedural Guide
+                </a>
+                <a href="/practical-submission.html?knowledge_id=${c.knowledge_id}" class="btn btn-outline btn-sm">
+                  <i class="fas fa-camera"></i> Practical Evidence
+                </a>
+                ${c.certificate_code ? `
+                  <a href="${c.verification_url}" class="btn btn-gold btn-sm">
+                    <i class="fas fa-award"></i> Certificate (${c.certificate_code})
+                  </a>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Progress Meter -->
+            <div style="background:var(--slate-50);border:1px solid #e2e8f0;padding:16px;border-radius:var(--radius-md);">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.9rem;font-weight:700;margin-bottom:8px;">
+                <span>Procedural Steps Completed: ${c.completed_steps_count} / ${c.total_steps_count}</span>
+                <span style="color:var(--teal-700);">${c.completion_percentage}%</span>
+              </div>
+              <div style="height:12px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
+                <div style="height:100%;background:linear-gradient(90deg, var(--teal-600), var(--teal-500));width:${c.completion_percentage}%;border-radius:6px;transition:width 0.4s ease;"></div>
+              </div>
+              
+              <div style="margin-top:10px;font-size:0.8rem;color:var(--slate-500);display:flex;justify-content:space-between;">
+                <span>Enrolled: ${new Date(c.enrolled_at).toLocaleDateString('en-GB')}</span>
+                <span>${c.status === 'completed' ? `<span style="color:var(--emerald-600);font-weight:700;"><i class="fas fa-check-circle"></i> Completed on ${new Date(c.completed_at).toLocaleDateString('en-GB')}</span>` : 'Practical In Progress'}</span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>
+

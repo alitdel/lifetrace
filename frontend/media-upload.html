@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Upload & Craft Photography – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Header Banner -->
+  <section style="background:var(--navy-900);color:var(--white);padding:45px 0 35px;border-bottom:3px solid var(--teal-600);">
+    <div class="container">
+      <span class="badge" style="background:var(--teal-600);color:white;margin-bottom:8px;"><i class="fas fa-camera"></i> Visual Preservation</span>
+      <h1 style="font-size:2.2rem;font-weight:900;color:var(--white);margin-bottom:8px;">Craft Media Upload Studio</h1>
+      <p style="color:var(--slate-300);font-size:1.05rem;">
+        Upload photographs of raw materials, procedural steps, finished products, demonstration videos, and practical learning evidence.
+      </p>
+    </div>
+  </section>
+
+  <div class="container" style="max-width:980px;padding:45px 20px;">
+    <!-- Upload Dropzone Card -->
+    <div class="card" style="padding:32px;margin-bottom:35px;">
+      <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);margin-bottom:18px;">
+        <i class="fas fa-cloud-upload-alt" style="color:var(--teal-600);margin-right:8px;"></i> Upload Craft Photograph or Video
+      </h3>
+
+      <form id="upload-form" onsubmit="handleUpload(event)">
+        <div style="border:2px dashed var(--slate-300);border-radius:var(--radius-lg);padding:40px 20px;text-align:center;background:var(--slate-50);cursor:pointer;transition:var(--transition);" id="dropzone" onclick="document.getElementById('file-input').click()">
+          <i class="fas fa-images" style="font-size:3rem;color:var(--teal-600);margin-bottom:14px;"></i>
+          <h4 style="font-size:1.1rem;font-weight:700;color:var(--navy-900);margin-bottom:6px;">Select Craft Photograph or Demonstration Video</h4>
+          <p style="font-size:0.88rem;color:var(--slate-500);margin-bottom:16px;">
+            Supported formats: JPEG, PNG, WEBP, GIF, MP4, WEBM, MOV (Up to 25MB)
+          </p>
+          <input type="file" id="file-input" style="display:none;" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" onchange="onFileSelected(this)">
+          <button type="button" class="btn btn-outline btn-sm">Browse Files</button>
+        </div>
+
+        <div id="file-preview-card" style="display:none;margin-top:20px;padding:16px;background:var(--teal-50);border:1px solid var(--teal-200);border-radius:var(--radius-md);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <i class="fas fa-file-alt text-teal" style="font-size:1.5rem;"></i>
+              <div>
+                <strong id="preview-filename" style="color:var(--navy-900);">filename.jpg</strong>
+                <div id="preview-filesize" style="font-size:0.8rem;color:var(--slate-500);">0 KB</div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="clearSelectedFile()" style="color:var(--rose-600);">&times; Remove</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
+          <div class="form-group">
+            <label class="form-label" for="caption">Photograph / Video Caption</label>
+            <input type="text" id="caption" class="form-control" placeholder="e.g. Coiling the sweetgrass core knot with awl">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="associated-craft">Craft record <span class="req">*</span></label>
+            <select id="associated-craft" class="form-control" required>
+              <option value="">Select one of your craft records</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:14px;margin-top:20px;">
+          <button type="submit" class="btn btn-teal btn-lg" id="upload-btn" disabled>
+            <i class="fas fa-upload"></i> Upload Media Asset
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Uploaded Media Gallery -->
+    <div class="card" style="padding:28px;">
+      <h3 style="font-size:1.2rem;font-weight:700;color:var(--navy-900);margin-bottom:16px;">
+        <i class="fas fa-photo-video" style="color:var(--gold-600);margin-right:8px;"></i> Preserved Media Asset Library
+      </h3>
+      <p style="font-size:0.88rem;color:var(--slate-600);margin-bottom:24px;">
+        Uploaded files are associated with a craft record and shown according to that record's visibility.
+      </p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:20px;" id="media-gallery">
+        <!-- Injected media items -->
+        <div style="border:1px solid var(--slate-200);border-radius:var(--radius-md);overflow:hidden;background:white;">
+          <img src="/assets/images/category-basket.svg" alt="Basket-making illustration" style="width:100%;height:120px;object-fit:cover;">
+          <div style="padding:10px;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--navy-900);">Basket Coiling</div>
+            <button class="btn btn-outline btn-sm" style="width:100%;font-size:0.75rem;margin-top:6px;" onclick="copyUrl('/assets/images/category-basket.svg')">Copy URL</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--slate-200);border-radius:var(--radius-md);overflow:hidden;background:white;">
+          <img src="/assets/images/category-mat.svg" alt="Mat-making illustration" style="width:100%;height:120px;object-fit:cover;">
+          <div style="padding:10px;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--navy-900);">Palm Mat Weaving</div>
+            <button class="btn btn-outline btn-sm" style="width:100%;font-size:0.75rem;margin-top:6px;" onclick="copyUrl('/assets/images/category-mat.svg')">Copy URL</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--slate-200);border-radius:var(--radius-md);overflow:hidden;background:white;">
+          <img src="/assets/images/category-pottery.svg" alt="Pottery illustration" style="width:100%;height:120px;object-fit:cover;">
+          <div style="padding:10px;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--navy-900);">Clay Water Pot</div>
+            <button class="btn btn-outline btn-sm" style="width:100%;font-size:0.75rem;margin-top:6px;" onclick="copyUrl('/assets/images/category-pottery.svg')">Copy URL</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--slate-200);border-radius:var(--radius-md);overflow:hidden;background:white;">
+          <img src="/assets/images/category-textiles.svg" alt="Textile illustration" style="width:100%;height:120px;object-fit:cover;">
+          <div style="padding:10px;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--navy-900);">Royal Bark Cloth</div>
+            <button class="btn btn-outline btn-sm" style="width:100%;font-size:0.75rem;margin-top:6px;" onclick="copyUrl('/assets/images/category-textiles.svg')">Copy URL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let selectedFile = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const auth = await api.get('/auth/me');
+        if (!auth.authenticated || !['expert', 'admin'].includes(auth.user.role)) {
+          api.toast('Sign in with an expert or administrator account to upload craft media.', 'warning');
+          setTimeout(() => window.location.href = '/login.html', 1000);
+          return;
+        }
+
+        // Only offer craft records this user is authorized to manage.
+        const libRes = await api.get('/knowledge/my/submissions');
+        const sel = document.getElementById('associated-craft');
+        if (libRes.records) {
+          libRes.records.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.id;
+            opt.textContent = r.title;
+            sel.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    function onFileSelected(input) {
+      if (input.files && input.files[0]) {
+        selectedFile = input.files[0];
+        document.getElementById('preview-filename').textContent = selectedFile.name;
+        document.getElementById('preview-filesize').textContent = (selectedFile.size / 1024).toFixed(1) + ' KB';
+        document.getElementById('file-preview-card').style.display = 'block';
+        document.getElementById('upload-btn').disabled = false;
+      }
+    }
+
+    function clearSelectedFile() {
+      selectedFile = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('file-preview-card').style.display = 'none';
+      document.getElementById('upload-btn').disabled = true;
+    }
+
+    async function handleUpload(e) {
+      e.preventDefault();
+      if (!selectedFile) return;
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('caption', document.getElementById('caption').value.trim());
+      const kId = document.getElementById('associated-craft').value;
+      if (!kId) {
+        api.toast('Choose a craft record before uploading media.', 'warning');
+        return;
+      }
+      formData.append('knowledge_id', kId);
+
+      try {
+        const res = await fetch('/api/media/upload', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
+        });
+        const data = await res.json();
+        if (data.success) {
+          api.toast('Media uploaded safely!', 'success');
+          addMediaToGallery(data.url, data.originalName, data.mediaType);
+          clearSelectedFile();
+          document.getElementById('caption').value = '';
+        } else {
+          api.toast(data.message || 'Upload failed', 'error');
+        }
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    }
+
+    function addMediaToGallery(url, name, type) {
+      const g = document.getElementById('media-gallery');
+      const div = document.createElement('div');
+      div.style.cssText = 'border:1px solid var(--slate-200);border-radius:var(--radius-md);overflow:hidden;background:white;';
+      div.innerHTML = `
+        <div style="height:120px;background:#000;display:flex;align-items:center;justify-content:center;">
+          ${type === 'video' ? '<i class="fas fa-video fa-2x text-white"></i>' : `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`}
+        </div>
+        <div style="padding:10px;">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--navy-900);text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">${name}</div>
+          <button class="btn btn-teal btn-sm" style="width:100%;font-size:0.75rem;margin-top:6px;" onclick="copyUrl('${url}')">Copy URL</button>
+        </div>
+      `;
+      g.prepend(div);
+    }
+
+    function copyUrl(url) {
+      navigator.clipboard.writeText(url);
+      api.toast(`Copied: ${url}`, 'info');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Library – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-50);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Library Header -->
+  <section style="background:var(--navy-900);color:var(--white);padding:45px 0 35px;">
+    <div class="container">
+      <div style="max-width:750px;">
+        <span class="badge" style="background:var(--teal-600);color:white;margin-bottom:8px;">Local crafts and practical skills</span>
+        <h1 style="font-size:2.2rem;font-weight:800;color:var(--white);">Explore the Knowledge Library</h1>
+        <p style="color:var(--slate-300);font-size:1.05rem;margin-top:6px;">
+          Find step-by-step guides to traditional crafts, with materials, tools and demonstrations where available.
+        </p>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <div style="margin-top:26px;background:var(--white);padding:14px;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:2;min-width:240px;position:relative;">
+          <i class="fas fa-search" style="position:absolute;left:14px;top:13px;color:var(--slate-400);"></i>
+          <input type="text" id="lib-search" class="form-control" style="padding-left:38px;border:none;background:var(--slate-50);" placeholder="Search skills by keyword, technique, or tool...">
+        </div>
+
+        <div style="flex:1;min-width:160px;">
+          <select id="lib-category" class="form-control" style="border:none;background:var(--slate-50);">
+            <option value="all">All Practical Domains</option>
+          </select>
+        </div>
+
+        <div style="flex:1;min-width:140px;">
+          <select id="lib-skill" class="form-control" style="border:none;background:var(--slate-50);">
+            <option value="all">All Skill Levels</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div style="flex:1;min-width:140px;">
+          <select id="lib-sort" class="form-control" style="border:none;background:var(--slate-50);">
+            <option value="newest">Newest First</option>
+            <option value="popular">Most Popular</option>
+            <option value="title">Alphabetical (A-Z)</option>
+            <option value="fastest">Shortest Duration</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-teal" onclick="loadLibrary(1)">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="padding:32px 20px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+      <div>
+        <span class="badge" style="background:var(--rose-600);color:white;margin-bottom:6px;">Craft demonstrations</span>
+        <h2 style="font-size:1.6rem;font-weight:800;color:var(--navy-900);margin:0;">Learn through video</h2>
+      </div>
+      <a href="/demo-library.html" class="btn btn-outline btn-sm"><i class="fas fa-play-circle"></i> Open full library</a>
+    </div>
+    <div id="demo-video-spotlight" class="knowledge-grid" aria-live="polite"></div>
+  </div>
+
+  <!-- Category Pills Quick Navigation -->
+  <div style="background:var(--white);border-bottom:1px solid var(--slate-200);padding:14px 0;">
+    <div class="container" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;" id="cat-pills-bar">
+      <!-- Injected pills -->
+    </div>
+  </div>
+
+  <!-- Library Grid & Results -->
+  <div class="container" style="padding:45px 20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="font-size:0.95rem;color:var(--slate-600);" id="results-count">Showing verified knowledge records...</div>
+      <div id="active-filter-tags" style="display:flex;gap:8px;"></div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="knowledge-grid" id="library-grid">
+      <!-- Injected cards -->
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination-controls" style="display:flex;justify-content:center;gap:8px;margin-top:40px;">
+      <!-- Injected pages -->
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    let currentPage = 1;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      renderDemoSpotlight();
+
+      // Load categories
+      try {
+        const catRes = await api.get('/categories');
+        const select = document.getElementById('lib-category');
+        const pillsBar = document.getElementById('cat-pills-bar');
+
+        pillsBar.innerHTML = `<button class="btn btn-sm btn-teal" onclick="selectCategory('all', this)">All Skills</button>`;
+
+        if (catRes.categories) {
+          catRes.categories.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.slug;
+            opt.textContent = c.name;
+            select.appendChild(opt);
+
+            const pill = document.createElement('button');
+            pill.className = 'btn btn-sm btn-outline';
+            pill.textContent = c.name;
+            pill.onclick = () => selectCategory(c.slug, pill);
+            pillsBar.appendChild(pill);
+          });
+        }
+
+        // Check URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const catParam = urlParams.get('category');
+        const searchParam = urlParams.get('search');
+        if (catParam) select.value = catParam;
+        if (searchParam) document.getElementById('lib-search').value = searchParam;
+
+        await loadLibrary(1);
+      } catch (err) {
+        console.error('Library init error:', err);
+      }
+
+      // Enter key on search
+      document.getElementById('lib-search').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') loadLibrary(1);
+      });
+    });
+
+    function renderDemoSpotlight() {
+      const target = document.getElementById('demo-video-spotlight');
+      if (!target || !window.DEMO_VIDEO_LIBRARY) return;
+
+      target.innerHTML = window.DEMO_VIDEO_LIBRARY.map(v => `
+        <div class="knowledge-card">
+          <div class="knowledge-thumb" style="height:220px;">
+            <img src="${v.thumbnail}" alt="${v.title} thumbnail" loading="lazy">
+            <div class="knowledge-thumb-overlay">
+              <span class="badge" style="background:var(--rose-600);color:white;"><i class="fas fa-video"></i> Video</span>
+              <span class="badge badge-skill">${v.category}</span>
+            </div>
+          </div>
+          <div class="knowledge-content">
+            <div class="knowledge-meta" style="margin-bottom:8px;">
+              <span><i class="fas fa-layer-group"></i> ${v.stage}</span>
+            </div>
+            <h3 class="knowledge-title" style="margin-bottom:8px;">${v.title}</h3>
+            <p class="knowledge-desc">${v.description}</p>
+            <div style="font-size:0.76rem;color:var(--slate-500);margin-bottom:12px;">Source: ${v.source}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--slate-100);">
+              <span style="font-size:0.76rem;color:var(--teal-700);font-weight:700;">${v.sourceType}</span>
+              <a href="/demo-library.html?video=${encodeURIComponent(v.id)}" class="btn btn-teal btn-sm">Play</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectCategory(slug, btnElement) {
+      document.getElementById('lib-category').value = slug;
+      document.querySelectorAll('#cat-pills-bar button').forEach(b => {
+        b.className = 'btn btn-sm btn-outline';
+      });
+      btnElement.className = 'btn btn-sm btn-teal';
+      loadLibrary(1);
+    }
+
+    async function loadLibrary(page = 1) {
+      currentPage = page;
+      const grid = document.getElementById('library-grid');
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px 0;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--teal-600);"></i></div>';
+
+      const search = document.getElementById('lib-search').value.trim();
+      const category = document.getElementById('lib-category').value;
+      const skill_level = document.getElementById('lib-skill').value;
+      const sort = document.getElementById('lib-sort').value;
+
+      try {
+        const res = await api.get('/knowledge/library', {
+          search,
+          category,
+          skill_level,
+          sort,
+          page,
+          limit: 12
+        });
+
+        document.getElementById('results-count').textContent = `Showing ${res.records.length} of ${res.pagination.total} practical records`;
+
+        if (res.records.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;background:white;border-radius:var(--radius-lg);border:1px solid #e2e8f0;">
+              <i class="fas fa-search" style="font-size:3rem;color:var(--slate-300);margin-bottom:14px;"></i>
+              <h3 style="font-size:1.3rem;font-weight:700;color:var(--navy-900);">No practical knowledge records found</h3>
+              <p style="color:var(--slate-600);margin:8px 0 20px;">Try adjusting your keyword search or category filters.</p>
+              <button class="btn btn-outline" onclick="resetFilters()">Clear Filters</button>
+            </div>
+          `;
+          document.getElementById('pagination-controls').innerHTML = '';
+          return;
+        }
+
+        grid.innerHTML = res.records.map(r => `
+          <div class="knowledge-card">
+            <div class="knowledge-thumb">
+              <img src="${r.cover_image_url || categoryImageFor({ slug: r.category_slug })}" alt="${r.title}" loading="lazy" onerror="this.src='/assets/images/category-other.svg'">
+              <div class="knowledge-thumb-overlay">
+                <span class="badge badge-published"><i class="fas fa-book-open"></i> Craft guide</span>
+                <span class="badge badge-skill">${r.skill_level}</span>
+              </div>
+            </div>
+            <div class="knowledge-content">
+              <div class="knowledge-meta">
+                <span><i class="fas ${r.category_icon || 'fa-tools'}"></i> ${r.category_name}</span>
+                <span>•</span>
+                <span><i class="far fa-clock"></i> ${r.estimated_time_minutes}m</span>
+                <span>•</span>
+                <span><i class="fas fa-list-ol"></i> ${r.steps_count} steps</span>
+              </div>
+              <h3 class="knowledge-title" style="margin-bottom:4px;">
+                <a href="/knowledge-details.html?id=${r.id}">${r.title}</a>
+              </h3>
+              ${r.local_name ? `<div style="font-size:0.83rem;font-style:italic;color:var(--teal-700);font-weight:600;margin-bottom:8px;">${r.local_name}</div>` : ''}
+              <p class="knowledge-desc">${r.short_summary}</p>
+              <div class="knowledge-author">
+                <div class="author-info">
+                  <img src="${r.expert_avatar || '/assets/avatars/joyce-nakato.svg'}" alt="${r.expert_name}" class="author-avatar" onerror="this.src='/assets/avatars/admin.svg'">
+                  <div>
+                    <div class="author-name">${r.expert_name}</div>
+                    <div class="author-trade">${r.community_region || r.expert_org || 'Master Craftsperson'}</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <button class="btn btn-outline btn-sm" onclick="toggleBookmark(${r.id}, this)" title="Bookmark" style="${r.is_bookmarked ? 'color:var(--gold-600);border-color:var(--gold-500);' : ''}">
+                    <i class="${r.is_bookmarked ? 'fas' : 'far'} fa-bookmark"></i>
+                  </button>
+                  <a href="/knowledge-details.html?id=${r.id}" class="btn btn-teal btn-sm">Study</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Pagination buttons
+        renderPagination(res.pagination);
+      } catch (err) {
+        api.toast(err.message, 'error');
+      }
+    }
+
+    async function toggleBookmark(id, btn) {
+      try {
+        const res = await api.post(`/knowledge/${id}/bookmark`);
+        const icon = btn.querySelector('i');
+        if (res.bookmarked) {
+          icon.className = 'fas fa-bookmark';
+          btn.style.color = 'var(--gold-600)';
+          btn.style.borderColor = 'var(--gold-500)';
+          api.toast(res.message, 'success');
+        } else {
+          icon.className = 'far fa-bookmark';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+          api.toast(res.message, 'info');
+        }
+      } catch (err) {
+        if (err.status === 401) {
+          api.toast('Please sign in as a learner to save bookmarks.', 'warning');
+        } else {
+          api.toast(err.message, 'error');
+        }
+      }
+    }
+
+    function renderPagination(pg) {
+      const controls = document.getElementById('pagination-controls');
+      if (pg.totalPages <= 1) {
+        controls.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      if (pg.page > 1) {
+        html += `<button class="btn btn-outline btn-sm" onclick="loadLibrary(${pg.page - 1})"><i class="fas fa-chevron-left"></i> Previous</button>`;
+      }
+      for (let i = 1; i <= pg.totalPages; i++) {
+        html += `<button class="btn btn-sm ${i === pg.page ? 'btn-teal' : 'btn-outline'}" onclick="loadLibrary(${i})">${i}</button>`;
+      }
+      if (pg.page < pg.totalPages) {
+        html += `<button class="btn btn-outline btn-sm" onclick="loadLibrary(${pg.page + 1})">Next <i class="fas fa-chevron-right"></i></button>`;
+      }
+      controls.innerHTML = html;
+    }
+
+    function resetFilters() {
+      document.getElementById('lib-search').value = '';
+      document.getElementById('lib-category').value = 'all';
+      document.getElementById('lib-skill').value = 'all';
+      document.getElementById('lib-sort').value = 'newest';
+      loadLibrary(1);
+    }
+  </script>
+</body>
+</html>
+

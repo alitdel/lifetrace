@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color:var(--slate-100);">
+  <div id="navbar-placeholder"></div>
+
+  <div class="container" style="max-width:680px;padding:45px 20px;">
+    <div class="card" style="padding:35px 40px;box-shadow:var(--shadow-lg);">
+      <div style="text-align:center;margin-bottom:28px;">
+        <div class="brand-icon" style="margin:0 auto 12px;width:48px;height:48px;font-size:1.4rem;">
+          <i class="fas fa-compass"></i>
+        </div>
+        <h1 style="font-size:1.8rem;font-weight:800;color:var(--navy-900);">Join the LifeTrace Community</h1>
+        <p style="font-size:0.92rem;color:var(--slate-600);margin-top:6px;">
+          Preserve your valuable craftsmanship or acquire verified vocational competencies.
+        </p>
+      </div>
+
+      <form id="register-form">
+        <!-- Role Selection Tabs -->
+        <div class="form-group">
+          <label class="form-label">I want to join as a <span class="req">*</span></label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <label id="role-learner-card" style="border:2px solid var(--teal-600);background:var(--teal-50);padding:14px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;gap:12px;">
+              <input type="radio" name="role" value="learner" checked style="accent-color:var(--teal-600);width:18px;height:18px;">
+              <div>
+                <div style="font-weight:700;color:var(--navy-900);font-size:0.95rem;">Learner</div>
+                <div style="font-size:0.75rem;color:var(--slate-600);">Study practical skills & earn certificates</div>
+              </div>
+            </label>
+
+            <label id="role-expert-card" style="border:2px solid var(--slate-300);background:var(--white);padding:14px;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;gap:12px;">
+              <input type="radio" name="role" value="expert" style="accent-color:var(--teal-600);width:18px;height:18px;">
+              <div>
+                <div style="font-weight:700;color:var(--navy-900);font-size:0.95rem;">Expert / Practitioner</div>
+                <div style="font-size:0.75rem;color:var(--slate-600);">Document & share practical skills</div>
+              </div>
+            </label>
+          </div>
+          <div class="form-hint" style="margin-top:8px;">
+            <i class="fas fa-info-circle"></i> Reviewer and Administrator roles require institutional invitation and cannot be created via public sign-up.
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="full_name">Full Name <span class="req">*</span></label>
+            <input type="text" id="full_name" class="form-control" placeholder="e.g. Denis Kato" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="username">Username <span class="req">*</span></label>
+            <input type="text" id="username" class="form-control" placeholder="e.g. denis_kato" required>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address <span class="req">*</span></label>
+            <input type="email" id="email" class="form-control" placeholder="name@domain.ug" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" placeholder="+256 700 000 000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Create Password <span class="req">*</span></label>
+          <div class="password-field">
+            <input type="password" id="password" class="form-control" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8">
+            <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Show password" aria-pressed="false"><i class="fas fa-eye" aria-hidden="true"></i></button>
+          </div>
+          <div class="form-hint">Must contain at least 8 characters for account security.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">Confirm Password <span class="req">*</span></label>
+          <div class="password-field">
+            <input type="password" id="confirm-password" class="form-control" placeholder="Re-enter your password" autocomplete="new-password" required minlength="8">
+            <button type="button" class="password-toggle" data-password-toggle="confirm-password" aria-label="Show confirmation password" aria-pressed="false"><i class="fas fa-eye" aria-hidden="true"></i></button>
+          </div>
+        </div>
+
+        <!-- Role Specific: Expert Fields -->
+        <div id="expert-fields" style="display:none;background:var(--slate-50);padding:18px;border-radius:var(--radius-md);margin-bottom:20px;border:1px solid var(--slate-200);">
+          <div class="form-group">
+            <label class="form-label" for="areas_of_expertise">Primary Areas of Practical Expertise <span class="req">*</span></label>
+            <input type="text" id="areas_of_expertise" class="form-control" placeholder="e.g. Drip Irrigation, Solar PV Sizing, Cabinet Making">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="organization_or_trade">Organization / Trade Association</label>
+              <input type="text" id="organization_or_trade" class="form-control" placeholder="e.g. Uganda Farmers Federation">
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="expert_location">Location / District</label>
+              <input type="text" id="expert_location" class="form-control" placeholder="e.g. Wakiso / Jinja">
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Specific: Learner Fields -->
+        <div id="learner-fields" style="background:var(--slate-50);padding:18px;border-radius:var(--radius-md);margin-bottom:20px;border:1px solid var(--slate-200);">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="education_level">Education / Academic Status</label>
+              <input type="text" id="education_level" class="form-control" placeholder="e.g. Undergraduate Student, Apprentice">
+            </div>
+
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="primary_interest">Primary Learning Interest</label>
+              <input type="text" id="primary_interest" class="form-control" placeholder="e.g. Electrical Wiring, Irrigation">
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-submit" class="btn btn-teal btn-lg" style="width:100%;">
+          <i class="fas fa-check-circle"></i> Create My Account
+        </button>
+      </form>
+
+      <div style="text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--slate-200);font-size:0.9rem;color:var(--slate-600);">
+        Already have an account? <a href="/login.html" style="font-weight:700;color:var(--teal-600);">Sign In here</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    function togglePasswordVisibility(inputId, button) {
+      const input = document.getElementById(inputId);
+      const visible = input.type === 'password';
+      input.type = visible ? 'text' : 'password';
+      button.setAttribute('aria-pressed', String(visible));
+      button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+      button.innerHTML = `<i class="fas fa-${visible ? 'eye-slash' : 'eye'}" aria-hidden="true"></i>`;
+    }
+
+    function toggleRoleFields() {
+      const role = document.querySelector('input[name="role"]:checked').value;
+      const expertFields = document.getElementById('expert-fields');
+      const learnerFields = document.getElementById('learner-fields');
+      const expertCard = document.getElementById('role-expert-card');
+      const learnerCard = document.getElementById('role-learner-card');
+
+      if (role === 'expert') {
+        expertFields.style.display = 'block';
+        learnerFields.style.display = 'none';
+        expertCard.style.borderColor = 'var(--teal-600)';
+        expertCard.style.background = 'var(--teal-50)';
+        learnerCard.style.borderColor = 'var(--slate-300)';
+        learnerCard.style.background = 'var(--white)';
+      } else {
+        expertFields.style.display = 'none';
+        learnerFields.style.display = 'block';
+        learnerCard.style.borderColor = 'var(--teal-600)';
+        learnerCard.style.background = 'var(--teal-50)';
+        expertCard.style.borderColor = 'var(--slate-300)';
+        expertCard.style.background = 'var(--white)';
+      }
+    }
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+      button.addEventListener('click', () => togglePasswordVisibility(button.dataset.passwordToggle, button));
+    });
+    document.querySelectorAll('input[name="role"]').forEach((input) => {
+      input.addEventListener('change', toggleRoleFields);
+    });
+
+    const requestedRole = new URLSearchParams(window.location.search).get('role');
+    if (requestedRole === 'expert') {
+      document.querySelector('input[name="role"][value="expert"]').checked = true;
+      toggleRoleFields();
+    }
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      if (password !== confirmPassword) {
+        api.toast('The passwords do not match.', 'error');
+        document.getElementById('confirm-password').focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+      const role = document.querySelector('input[name="role"]:checked').value;
+      const body = {
+        full_name: document.getElementById('full_name').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        password,
+        role
+      };
+
+      if (role === 'expert') {
+        body.areas_of_expertise = document.getElementById('areas_of_expertise').value.trim();
+        body.organization_or_trade = document.getElementById('organization_or_trade').value.trim();
+        body.location = document.getElementById('expert_location').value.trim() || 'Uganda';
+      } else {
+        body.education_level = document.getElementById('education_level').value.trim();
+        body.primary_interest = document.getElementById('primary_interest').value.trim();
+      }
+
+      try {
+        const res = await api.post('/auth/register', body);
+        api.toast('Registration successful! Redirecting to your dashboard...', 'success');
+        setTimeout(() => {
+          window.location.href = '/dashboard.html';
+        }, 800);
+      } catch (err) {
+        api.toast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Create My Account';
+      }
+    });
+  </script>
+</body>
+</html>
+

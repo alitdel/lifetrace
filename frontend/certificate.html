@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate Verification – LifeTrace Uganda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    @media print {
+      body { background: white; }
+      .navbar, .footer, .no-print { display: none !important; }
+      .cert-frame { border: 8px double #0F172A; box-shadow: none; margin: 0; width: 100%; max-width: 100%; }
+    }
+  </style>
+</head>
+<body style="background-color:var(--slate-100);">
+  <div id="navbar-placeholder"></div>
+
+  <!-- Search / Verification Section -->
+  <section class="no-print" style="background:var(--navy-900);color:var(--white);padding:45px 0 35px;border-bottom:3px solid var(--gold-500);">
+    <div class="container" style="max-width:700px;text-align:center;">
+      <span class="badge" style="background:var(--gold-500);color:var(--navy-950);margin-bottom:8px;">Public Certificate Check</span>
+      <h1 style="font-size:2.2rem;font-weight:800;color:var(--white);">Certificate Verification</h1>
+      <p style="color:var(--slate-300);font-size:1rem;margin-top:6px;">
+        Check whether a certificate reference is recorded and currently valid in LifeTrace.
+      </p>
+
+      <form id="verify-form" style="margin-top:24px;display:flex;gap:10px;">
+        <input type="text" id="cert-input-code" class="form-control form-control-lg" placeholder="Enter Unique Certificate Code (e.g. LT-UG-2026-BSK-001)" required style="text-transform:uppercase;font-family:monospace;font-weight:700;letter-spacing:1px;background:white;">
+        <button type="submit" id="btn-verify" class="btn btn-gold btn-lg" style="white-space:nowrap;">
+          <i class="fas fa-check-shield"></i> Verify
+        </button>
+      </form>
+      <p style="font-size:0.78rem;color:var(--slate-300);margin-top:10px;">LifeTrace certificates are platform records and are not government-issued qualifications.</p>
+    </div>
+  </section>
+
+  <div class="container" style="padding:40px 20px;">
+    <!-- Verification Status Banner -->
+    <div id="cert-status-banner" class="no-print" style="display:none;max-width:860px;margin:0 auto 24px;"></div>
+
+    <!-- Official Certificate Document Display -->
+    <div id="certificate-display" style="display:none;">
+      <div style="display:flex;justify-content:flex-end;max-width:860px;margin:0 auto 12px;gap:10px;" class="no-print">
+        <button class="btn btn-teal btn-sm" id="print-certificate"><i class="fas fa-print"></i> Print / Save as PDF</button>
+        <button class="btn btn-outline btn-sm" id="copy-certificate-link"><i class="fas fa-link"></i> Copy Verification Link</button>
+      </div>
+
+      <!-- Formal Certificate Frame -->
+      <div class="cert-frame">
+        <div class="cert-seal">
+          <i class="fas fa-award"></i>
+        </div>
+
+        <div style="font-size:0.9rem;text-transform:uppercase;font-weight:700;color:var(--gold-700);letter-spacing:2px;margin-bottom:6px;">
+          LifeTrace • Practical Learning
+        </div>
+
+        <h1 class="cert-title">Certificate of Practical Learning</h1>
+
+        <div style="font-size:1rem;color:var(--slate-600);margin:16px 0 6px;">
+          This LifeTrace record confirms that
+        </div>
+
+        <div class="cert-recipient" id="cert-recipient-name">
+          Denis Kato
+        </div>
+
+        <div style="font-size:1rem;color:var(--slate-600);max-width:650px;margin:0 auto 10px;line-height:1.6;">
+          has completed the recorded practical learning and assessment requirements for:
+        </div>
+
+        <h2 style="font-size:1.5rem;font-weight:800;color:var(--navy-900);margin:12px 0;" id="cert-course-title">
+          Handwoven Coil Basketry Mastery Certificate
+        </h2>
+
+        <div class="cert-code" id="cert-code-text">
+          LT-UG-2026-BSK-001
+        </div>
+
+        <div style="font-size:0.85rem;color:var(--slate-500);margin-bottom:30px;">
+          Issued on: <strong id="cert-issue-date">2026-02-04</strong> • Status: <span class="badge badge-valid" id="cert-valid-badge">VERIFIED VALID</span>
+        </div>
+
+        <p style="margin-top:30px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:0.85rem;color:var(--slate-600);">
+          This certificate record can be checked using its LifeTrace reference number.
+        </p>
+
+        <div style="margin-top:30px;font-size:0.72rem;color:var(--slate-400);">
+          Verifiable online at <span id="cert-url-text">https://lifetrace.ug/certificate.html</span> • LifeTrace Practical Knowledge LMS
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+
+      if (code) {
+        document.getElementById('cert-input-code').value = code;
+        await verifyCertificateCode(code);
+      }
+    });
+
+    document.getElementById('verify-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('cert-input-code').value.trim();
+      if (code) {
+        await verifyCertificateCode(code);
+      }
+    });
+
+    document.getElementById('print-certificate').addEventListener('click', () => window.print());
+    document.getElementById('copy-certificate-link').addEventListener('click', copyCertLink);
+
+    async function verifyCertificateCode(code) {
+      const btn = document.getElementById('btn-verify');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+      const banner = document.getElementById('cert-status-banner');
+      const certDisplay = document.getElementById('certificate-display');
+
+      try {
+        const res = await api.get(`/certificates/verify/${encodeURIComponent(code)}`);
+
+        if (res.verified && res.certificate) {
+          const c = res.certificate;
+          banner.style.display = 'block';
+          banner.className = 'alert-tip';
+          banner.innerHTML = `
+            <i class="fas fa-check-circle" style="font-size:1.6rem;color:var(--emerald-600);"></i>
+            <div>
+              <strong style="color:var(--emerald-600);font-size:1.05rem;">VALID IN LIFETRACE RECORDS</strong><br>
+              Certificate code <strong>${c.code}</strong> is marked valid in LifeTrace records. Issued to <strong>${c.learner_name}</strong> on <strong>${c.issue_date}</strong>.
+            </div>
+          `;
+
+          // Populate Frame
+          document.getElementById('cert-recipient-name').textContent = c.learner_name;
+          document.getElementById('cert-course-title').textContent = c.title;
+          document.getElementById('cert-code-text').textContent = c.code;
+          document.getElementById('cert-issue-date').textContent = c.issue_date;
+          document.getElementById('cert-valid-badge').textContent = c.status.toUpperCase();
+          document.getElementById('cert-url-text').textContent = window.location.href;
+
+          certDisplay.style.display = 'block';
+          certDisplay.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (err) {
+        banner.style.display = 'block';
+        banner.className = 'alert-safety';
+        banner.innerHTML = `
+          <i class="fas fa-times-circle" style="font-size:1.6rem;color:var(--rose-600);"></i>
+          <div>
+            <strong style="color:var(--rose-600);font-size:1.05rem;">CERTIFICATE NOT VERIFIED</strong><br>
+            ${err.message || 'The specified certificate reference could not be found in LifeTrace records.'}
+          </div>
+        `;
+        certDisplay.style.display = 'none';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-shield"></i> Verify';
+      }
+    }
+
+    function copyCertLink() {
+      navigator.clipboard.writeText(window.location.href);
+      api.toast('Verification link copied to clipboard!', 'success');
+    }
+  </script>
+</body>
+</html>
+
