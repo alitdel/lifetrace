@@ -43,6 +43,9 @@ function createStorage(folderKey = 'media') {
   return multer.diskStorage({
     destination: (req, file, cb) => {
       const dest = uploadDirs[folderKey] || uploadDirs.media;
+      if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, { recursive: true });
+      }
       cb(null, dest);
     },
     filename: (req, file, cb) => {

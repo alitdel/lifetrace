@@ -182,28 +182,34 @@ The LifeTrace schema (`backend/database/schema.sql`) implements 29 relational ta
 
 ### 7.2 Cloud Deployment Options
 
-#### Option A: Render (Web Service or Blueprint)
-1. Fork or push your code to your GitHub repository: `https://github.com/alitdel/lifetrace`.
-2. On Render Dashboard, click **New +** -> **Blueprint** and select your repository (it automatically detects `render.yaml`).
-3. Alternatively, create a **Web Service**:
-   - **Environment:** `Node`
-   - **Build Command:** `npm ci --only=production`
-   - **Start Command:** `npm run db:setup && node backend/server.js`
+#### Option A: Render (100% Free Web Service or Blueprint)
+1. Ensure your latest changes are pushed to GitHub: `https://github.com/alitdel/lifetrace`.
+2. On Render Dashboard ([dashboard.render.com](https://dashboard.render.com)), click **New +** -> **Blueprint** and select your repository (it automatically detects and applies `render.yaml`).
+3. Alternatively, create a manual **Web Service**:
+   - **Name:** `lifetrace`
+   - **Language / Runtime:** `Node`
+   - **Plan:** `Free` (Zero Cost)
+   - **Region:** `Oregon (US West)` or your preferred region
+   - **Build Command:** `npm ci --omit=dev`
+   - **Start Command:** `npm run db:setup && npm start`
    - **Health Check Path:** `/health`
-4. In **Environment Variables**, set:
+4. In **Environment Variables**, provide your TiDB Cloud credentials:
    - `NODE_ENV`: `production`
+   - `PORT`: `10000`
    - `DB_ENGINE`: `mysql`
-   - `DB_HOST`: `<your-tidb-host>`
+   - `DB_HOST`: `gateway01.ap-northeast-1.prod.aws.tidbcloud.com`
    - `DB_PORT`: `4000`
-   - `DB_USER`: `<your-tidb-user>`
-   - `DB_PASSWORD`: `<your-tidb-password>`
    - `DB_NAME`: `lifetrace_db`
+   - `DB_USER`: `<your-tidb-cluster-username>` (e.g. `xxxxxx.root`)
+   - `DB_PASSWORD`: `<your-tidb-cluster-password>`
    - `DB_SSL`: `true`
    - `STRICT_MYSQL`: `true`
-   - `SESSION_SECRET`: `<64-character-random-hex>`
-   - `ALLOWED_ORIGINS`: `https://your-service.onrender.com`
-   - `ADMIN_PASSWORD`: `<your-admin-password>`
-5. Attach a Persistent Disk (mount path: `/app/backend/uploads`) to retain uploaded user photos and videos across restarts.
+   - `SESSION_SECRET`: `<click 'Generate' in Render or paste a 64-char random hex string>`
+   - `SESSION_LIFETIME_HOURS`: `24`
+   - `ADMIN_PASSWORD`: `<your-secure-admin-password-minimum-8-characters>`
+5. **Zero-Cost Storage Architecture:**
+   - On the Free plan, all core traditional craft diagrams, step-by-step guides, category icons, and expert portraits are statically bundled under `frontend/assets/` and served directly by Express without requiring paid disks.
+   - User uploads are safely handled in `backend/uploads/` with on-the-fly directory creation. (If persistent media uploads across container restarts are later desired, an optional disk or S3-compatible bucket may be configured).
 
 #### Option B: Railway / Fly.io / Heroku
 Configure the same environment variables in your provider's dashboard. Set the start command to:

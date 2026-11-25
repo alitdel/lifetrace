@@ -55,7 +55,6 @@ async function runSeed() {
 
   // 2. Users (4 Roles: Admin, Expert, Reviewer, Learner)
   const defaultSalt = await bcrypt.genSalt(10);
-  const defaultHash = await bcrypt.hash('Admin@LifeTrace2025', defaultSalt);
   const artisanHash = await bcrypt.hash('Artisan@2025', defaultSalt);
   const learnerHash = await bcrypt.hash('Learner@2025', defaultSalt);
 
@@ -64,9 +63,24 @@ async function runSeed() {
   if (existingAdmin && existingAdmin.length > 0) {
     console.log('[Seed Security] Existing administrator account preserved without modification.');
   } else {
-    await upsert('users', ['id', 'username', 'email', 'password_hash', 'role', 'full_name', 'phone', 'status', 'avatar_url'],
-      [1, 'admin', 'admin@lifetrace.ug', defaultHash, 'admin', 'System Administrator', '+256700000001', 'active', '/assets/avatars/admin.svg'],
-      ['role', 'full_name', 'phone']);
+    const isProduction = process.env.NODE_ENV === 'production';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (adminPassword) {
+      const adminHash = await bcrypt.hash(adminPassword, defaultSalt);
+      await upsert('users', ['id', 'username', 'email', 'password_hash', 'role', 'full_name', 'phone', 'status', 'avatar_url'],
+        [1, process.env.ADMIN_USERNAME || 'admin', process.env.ADMIN_EMAIL || 'admin@lifetrace.ug', adminHash, 'admin', 'System Administrator', '+256700000001', 'active', '/assets/avatars/admin.svg'],
+        ['role', 'full_name', 'phone']);
+      console.log('[Seed Security] Administrator account initialized with securely configured ADMIN_PASSWORD.');
+    } else if (isProduction) {
+      console.log('[Seed Security] Production environment detected without ADMIN_PASSWORD: skipped default admin creation. Run "npm run admin:init -- --password=<secret>" to create the administrator.');
+    } else {
+      const devHash = await bcrypt.hash('Admin@LifeTrace2025', defaultSalt);
+      await upsert('users', ['id', 'username', 'email', 'password_hash', 'role', 'full_name', 'phone', 'status', 'avatar_url'],
+        [1, 'admin', 'admin@lifetrace.ug', devHash, 'admin', 'System Administrator', '+256700000001', 'active', '/assets/avatars/admin.svg'],
+        ['role', 'full_name', 'phone']);
+      console.warn('[Seed Warning] Development admin initialized with default password. DO NOT USE IN PRODUCTION.');
+    }
   }
 
   const artisansAndReviewers = [

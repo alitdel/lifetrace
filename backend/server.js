@@ -135,10 +135,19 @@ app.use(
         return callback(null, true);
       }
 
+      let isRenderOrigin = false;
+      try {
+        const parsed = new URL(origin);
+        isRenderOrigin = parsed.hostname.endsWith('.onrender.com');
+      } catch (e) {
+        isRenderOrigin = false;
+      }
+
       if (
         process.env.NODE_ENV !== 'production' ||
         allowedOrigins.length === 0 ||
-        allowedOrigins.includes(origin)
+        allowedOrigins.includes(origin) ||
+        isRenderOrigin
       ) {
         return callback(null, true);
       }
@@ -282,6 +291,14 @@ app.get('/health', (req, res) => {
 
 app.get('/api/health', (req, res) => {
   res.json(getHealthStatus());
+});
+
+// Unmatched API routes return JSON 404
+app.all('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `API endpoint ${req.method} ${req.path} not found.`
+  });
 });
 
 // 9. Error handling middleware

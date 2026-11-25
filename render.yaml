@@ -4,8 +4,8 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm ci --only=production
-    startCommand: npm run db:setup && node backend/server.js
+    buildCommand: npm ci --omit=dev
+    startCommand: npm run db:setup && npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -14,27 +14,23 @@ services:
         value: 10000
       - key: DB_ENGINE
         value: mysql
+      - key: DB_HOST
+        value: gateway01.ap-northeast-1.prod.aws.tidbcloud.com
       - key: DB_PORT
-        value: 4000
+        value: "4000"
       - key: DB_NAME
         value: lifetrace_db
       - key: DB_SSL
         value: "true"
       - key: STRICT_MYSQL
         value: "true"
-      - key: SESSION_LIFETIME_HOURS
-        value: "24"
-      - key: DB_HOST
-        sync: false
       - key: DB_USER
         sync: false
       - key: DB_PASSWORD
         sync: false
       - key: SESSION_SECRET
         generateValue: true
+      - key: SESSION_LIFETIME_HOURS
+        value: "24"
       - key: ADMIN_PASSWORD
         sync: false
-    disk:
-      name: lifetrace-uploads
-      mountPath: /app/backend/uploads
-      sizeGB: 1

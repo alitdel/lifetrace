@@ -12,11 +12,11 @@ WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=10000
 
 # Install dependencies (only production dependencies)
 COPY package.json package-lock.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy application source code
 COPY backend ./backend
